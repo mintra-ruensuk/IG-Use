@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                             && !packageName.equals(igPackageName)) {
                         Log.d("tagtag", "IG IS CLOSED ===>>>>>>>>>>>>>>>>>>>>");
                         sample.setStatus(Sample.POPUP);
-
+                        sleep(2000);
 
                         sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
                         sleep(2000);
