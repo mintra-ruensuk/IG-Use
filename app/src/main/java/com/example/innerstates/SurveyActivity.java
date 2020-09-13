@@ -54,7 +54,6 @@ public class SurveyActivity extends AppCompatActivity {
         TextView pageTextView = findViewById(R.id.pageTextView);
         pageTextView.setText(currentPage + " / 8");
         ProgressBar progressBar = findViewById(R.id.progressBar);
-        
         progressBar.setProgress((currentPage * 100) / 8);
 
         Question questions[] = surveyQuestion.get(page);
