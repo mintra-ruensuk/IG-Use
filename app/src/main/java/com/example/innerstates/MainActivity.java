@@ -4,6 +4,9 @@ import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,12 +19,15 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.example.innerstates.ui.dashboard.DashboardFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.rvalerio.fgchecker.AppChecker;
 
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -30,6 +36,7 @@ import androidx.navigation.ui.NavigationUI;
 public class MainActivity extends AppCompatActivity {
 
     public final static int REQUEST_CODE = 5463;
+    final static String CHANNEL_ID = "123456";
     Context mContext;
     String igPackageName = "com.instagram.android";
 
@@ -52,7 +59,21 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
 
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, SurveyActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
+
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.my_icon)
+                .setContentTitle("How do you feel now?")
+                .setContentText("Seem that you've just used Instagram. How do you feel?")
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText("You've just used Instagram. How do you feel now?"))
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+        final int notificationId = 9876;
 
         final AppChecker appChecker = new AppChecker();
         final Sample sample = new Sample();
@@ -78,6 +99,11 @@ public class MainActivity extends AppCompatActivity {
                         sample.setStatus(Sample.POPUP);
                         sleep(2000);
 
+                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mContext);
+
+                        // notificationId is a unique int for each notification that you must define
+                        notificationManager.notify(notificationId, builder.build());
+
                         sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
                         sleep(2000);
 //                        sample.setStatus(Sample.READY);
@@ -88,12 +114,32 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }).timeout(500).start(this);
+
+        createNotificationChannel();
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         refreshMessage();
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     private void refreshMessage() {
