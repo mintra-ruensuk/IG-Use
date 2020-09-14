@@ -1,20 +1,12 @@
 package com.example.innerstates;
 
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.drawable.DrawableCompat;
-
 import android.util.Log;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -25,12 +17,17 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.util.HashMap;
-import java.util.Map;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 public class SurveyActivity extends AppCompatActivity {
     private HashMap<String, Question[]> surveyQuestion = new HashMap<String, Question[]>();
     private int currentPage = 1;
     private LinearLayout questionLayOut;
+    private int totalPage = 9;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +36,7 @@ public class SurveyActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mContext = this.getBaseContext();
         questionLayOut = findViewById(R.id.questionLayout);
 
         createSurvey();
@@ -50,11 +48,12 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void displaySurvey() {
+        Log.d("tagtag----", "Displaying survey... " + currentPage);
         String page = "page" + currentPage;
         TextView pageTextView = findViewById(R.id.pageTextView);
-        pageTextView.setText(currentPage + " / 8");
+        pageTextView.setText(currentPage + " / " + totalPage);
         ProgressBar progressBar = findViewById(R.id.progressBar);
-        progressBar.setProgress((currentPage * 100) / 8);
+        progressBar.setProgress((currentPage * 100) / totalPage);
 
         Question questions[] = surveyQuestion.get(page);
         for (Question question: questions) {
@@ -70,22 +69,64 @@ public class SurveyActivity extends AppCompatActivity {
 
         }
 
-        Button nextButton = new Button(this);
-        nextButton.setText("Next");
-        nextButton.setId(Integer.parseInt(page.substring(page.length()-1)));
-        nextButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Log.d("tafftaff----", v.getId()+"");
-                nextSurvey();
-            }
-        });
-        questionLayOut.addView(nextButton);
+        if (currentPage == 1) {
+            Button nextButton = new Button(this);
+            nextButton.setText("Next");
+            nextButton.setId(currentPage);
+            nextButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    Log.d("tafftaff----", v.getId()+"");
+                    nextSurvey();
+                }
+            });
+            questionLayOut.addView(nextButton);
+        }else {
+            LinearLayout buttonLayout = new LinearLayout(this);
+            buttonLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            p.weight = 0.5f;
+
+            Button backButton = new Button(this);
+            backButton.setText("Back");
+            backButton.setId(currentPage);
+            backButton.setLayoutParams(p);
+            backButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    Log.d("tafftaff----", "Back button is pressed.");
+                    backSurvey();
+                }
+            });
+
+            Button nextButton = new Button(this);
+            nextButton.setText("Next");
+            nextButton.setId(currentPage);
+            nextButton.setLayoutParams(p);
+            nextButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    Log.d("tafftaff----", v.getId()+"");
+                    nextSurvey();
+                }
+            });
+            buttonLayout.addView(backButton);
+            buttonLayout.addView(nextButton);
+            questionLayOut.addView(buttonLayout);
+        }
+
     }
 
     private void nextSurvey() {
         questionLayOut.removeAllViews();
         currentPage += 1;
+        displaySurvey();
+    }
+
+    private void backSurvey() {
+        questionLayOut.removeAllViews();
+        currentPage -= 1;
         displaySurvey();
     }
 

@@ -1,7 +1,6 @@
 package com.example.innerstates;
 
 import android.annotation.TargetApi;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
 import android.app.NotificationChannel;
@@ -10,20 +9,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.TextView;
 
-import com.example.innerstates.ui.dashboard.DashboardFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.rvalerio.fgchecker.AppChecker;
-
-import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
@@ -37,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     public final static int REQUEST_CODE = 5463;
     final static String CHANNEL_ID = "123456";
-    Context mContext;
-    String igPackageName = "com.instagram.android";
+    private Context mContext;
+    private String igPackageName = "com.instagram.android";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
