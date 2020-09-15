@@ -16,8 +16,14 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.rvalerio.fgchecker.AppChecker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -33,6 +39,12 @@ public class MainActivity extends AppCompatActivity {
     private Context mContext;
     private String igPackageName = "com.instagram.android";
     final static int notificationId = 9876;
+    private String userUniqueId;
+
+
+    // Write a message to the database
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference mDatabase = database.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
+        // Set up user's unique ID (device id)
+        userUniqueId = Settings.Secure.getString(mContext.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
 
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(this, SurveyActivity.class);
@@ -111,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
         }).timeout(500).start(this);
 
         createNotificationChannel();
+
+        writeNewUser();
 
 
     }
@@ -240,5 +257,24 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void writeNewUser() {
+
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (!snapshot.child("users").hasChild(userUniqueId)) {
+                    User user = new User("participant" + userUniqueId);
+                    mDatabase.child("users").child(userUniqueId).setValue(user);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 }
