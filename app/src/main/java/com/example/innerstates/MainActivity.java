@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     final static String CHANNEL_ID = "123456";
     private Context mContext;
     private String igPackageName = "com.instagram.android";
+    final static int notificationId = 9876;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +65,10 @@ public class MainActivity extends AppCompatActivity {
                 .setContentText("Seem that you've just used Instagram. How do you feel?")
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText("You've just used Instagram. How do you feel now?"))
-                .setContentIntent(pendingIntent)
+//                .setContentIntent(pendingIntent)
+                .setFullScreenIntent(pendingIntent, true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
-        final int notificationId = 9876;
+
 
         final AppChecker appChecker = new AppChecker();
         final Sample sample = new Sample();
@@ -90,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                             && !packageName.equals(igPackageName)) {
                         Log.d("tagtag", "IG IS CLOSED ===>>>>>>>>>>>>>>>>>>>>");
                         sample.setStatus(Sample.POPUP);
-                        sleep(2000);
+//                        sleep(2000);
 
                         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mContext);
 
@@ -117,6 +119,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         refreshMessage();
+    }
+
+    public static void cancelNotification(Context ctx) {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
+        nMgr.cancel(notificationId);
+    }
+    public static void cancelNotification(Context ctx, int notifyId) {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
+        nMgr.cancel(notifyId);
     }
 
     private void createNotificationChannel() {

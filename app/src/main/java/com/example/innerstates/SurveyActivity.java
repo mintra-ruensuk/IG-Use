@@ -48,6 +48,8 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void displaySurvey() {
+        MainActivity.cancelNotification(mContext);
+
         Log.d("tagtag----", "Displaying survey... " + currentPage);
         String page = "page" + currentPage;
         TextView pageTextView = findViewById(R.id.pageTextView);
