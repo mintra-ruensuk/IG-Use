@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mContext);
 
                         // notificationId is a unique int for each notification that you must define
+                        //TODO: Need to create notification id and notification object
                         notificationManager.notify(notificationId, builder.build());
 
                         sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);

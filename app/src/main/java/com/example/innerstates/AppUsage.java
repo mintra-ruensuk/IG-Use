@@ -22,7 +22,6 @@ public class AppUsage {
     public AppUsage(String uid, String appPackageName, String status, Context context) {
         this.uid = uid;
         this.appPackageName = appPackageName;
-        this.actionTimestamp = 0;
         this.actionTimestamp = System.currentTimeMillis() / 1000L;
         this.status = status;
 

@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import com.example.innerstates.lang.EnglishQuestion;
+
 public class SurveyActivity extends AppCompatActivity {
     private HashMap<String, Question[]> surveyQuestion = new HashMap<String, Question[]>();
     private int currentPage = 1;
@@ -133,10 +135,10 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void createSurvey() {
-        Question socialCompare1 = new Question("I was paying a lot of attention to how I do things compared to how people I follow on Instagram do things", disToAgree());
-        Question socialCompare2 = new Question("I was wanting to find out how well I do things compared to people I follow on Instagram", disToAgree());
+        Question socialCompare1 = new Question("social1", EnglishQuestion.social1, disToAgree());
+        Question socialCompare2 = new Question("social2", EnglishQuestion.social2, disToAgree());
 
-        Question envy1 = new Question("I was generally feel inferior to others", disToAgree());
+        Question envy1 = new Question("envy1", EnglishQuestion.envy1, disToAgree());
         surveyQuestion.put("page1", new Question[] {socialCompare1, socialCompare2});
         surveyQuestion.put("page2", new Question[] {envy1, socialCompare2});
     }
