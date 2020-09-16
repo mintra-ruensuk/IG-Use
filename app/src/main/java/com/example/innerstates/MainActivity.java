@@ -44,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
     final static int notificationId = 9876;
     private String userUniqueId;
     private String lastForegroundApp = "";
+    private Sample sample;
+    private Sample igUsage;
+    final AppChecker appChecker = new AppChecker();
 
 
     // Write a message to the database
@@ -54,6 +57,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        sample = new Sample();
+        igUsage = new Sample();
 
         mContext = this.getBaseContext();
 
@@ -89,8 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
 
-        final AppChecker appChecker = new AppChecker();
-        final Sample sample = new Sample();
+
 
         //LOG APP USAGE OPEN AND CLOSE ดีไหม
         appChecker.other(new AppChecker.Listener() {
@@ -103,16 +109,16 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("tagtag", sample.getReadableStatus());
                 if (packageName != null) {
 
+                    recordIgUsage(packageName);
+
                     if (sample.getStatus() == Sample.READY
                             && packageName.equals(igPackageName)) {
                         sample.setStatus(Sample.IG_OPENED);
                         Log.d("tagtag", "IG IS OPENing ===>>>>>>>>>>>>>>>>>>>>");
-                        writeNewAppUsage(packageName, "IG_OPENED",mContext);
                     }
                     if (sample.getStatus() == Sample.IG_OPENED
                             && !packageName.equals(igPackageName)) {
                         Log.d("tagtag", "IG IS CLOSED ===>>>>>>>>>>>>>>>>>>>>");
-                        writeNewAppUsage(packageName, "IG_CLOSED",mContext);
                         sample.setStatus(Sample.POPUP);
 //                        sleep(2000);
 
@@ -144,6 +150,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         refreshMessage();
+    }
+
+    private void recordIgUsage(String packageName) {
+        if (igUsage.getStatus() == Sample.READY
+                && packageName.equals(igPackageName)) {
+            writeNewAppUsage(packageName, "IG_OPENED",mContext);
+            igUsage.setStatus(Sample.IG_OPENED);
+        }
+        if (igUsage.getStatus() == Sample.IG_OPENED
+                && !packageName.equals(igPackageName)) {
+            writeNewAppUsage(packageName, "IG_CLOSED",mContext);
+            igUsage.setStatus(Sample.READY);
+        }
     }
 
     public static void cancelNotification(Context ctx) {
