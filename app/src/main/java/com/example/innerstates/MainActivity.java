@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private String igPackageName = "com.instagram.android";
     final static int notificationId = 9876;
     private String userUniqueId;
+    private String lastForegroundApp = "";
 
 
     // Write a message to the database
@@ -93,15 +94,15 @@ public class MainActivity extends AppCompatActivity {
 
         //LOG APP USAGE OPEN AND CLOSE ดีไหม
         appChecker.other(new AppChecker.Listener() {
-
             @Override
             public void onForeground(String packageName) {
-                String currentApp = appChecker.getForegroundApp(getApplicationContext());
+//                String currentApp = appChecker.getForegroundApp(getApplicationContext());
 
 
 //                Log.d("tagtagtag",packageName+"----=-=-==============");
                 Log.d("tagtag", sample.getReadableStatus());
                 if (packageName != null) {
+
                     if (sample.getStatus() == Sample.READY
                             && packageName.equals(igPackageName)) {
                         sample.setStatus(Sample.IG_OPENED);
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                     if (sample.getStatus() == Sample.IG_OPENED
                             && !packageName.equals(igPackageName)) {
                         Log.d("tagtag", "IG IS CLOSED ===>>>>>>>>>>>>>>>>>>>>");
+                        writeNewAppUsage(packageName, "IG_CLOSED",mContext);
                         sample.setStatus(Sample.POPUP);
 //                        sleep(2000);
 
@@ -121,15 +123,15 @@ public class MainActivity extends AppCompatActivity {
 
                         sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
                         sleep(2000);
-//                        sample.setStatus(Sample.READY);
+                        sample.setStatus(Sample.READY);
                     }
 
-
+                lastForegroundApp = packageName;
 
                 }
 
             }
-        }).timeout(500).start(this);
+        }).timeout(1000).start(this);
 
         createNotificationChannel();
 
