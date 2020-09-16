@@ -23,6 +23,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.rvalerio.fgchecker.AppChecker;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
@@ -88,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         final AppChecker appChecker = new AppChecker();
         final Sample sample = new Sample();
 
+        //LOG APP USAGE OPEN AND CLOSE ดีไหม
         appChecker.other(new AppChecker.Listener() {
 
             @Override
@@ -102,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
                             && packageName.equals(igPackageName)) {
                         sample.setStatus(Sample.IG_OPENED);
                         Log.d("tagtag", "IG IS OPENing ===>>>>>>>>>>>>>>>>>>>>");
+                        writeNewAppUsage(packageName, "IG_OPENED",mContext);
                     }
                     if (sample.getStatus() == Sample.IG_OPENED
                             && !packageName.equals(igPackageName)) {
@@ -118,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                         sleep(2000);
 //                        sample.setStatus(Sample.READY);
                     }
+
 
 
                 }
@@ -276,5 +282,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+    private void writeNewAppUsage(String appPackageName, String status, Context context) {
+        // Create new post at /user-posts/$userid/$postid and at
+        // /posts/$postid simultaneously
+        String childName = "/users/" + userUniqueId + "/ig-usage/";
+        String key = mDatabase.child(childName).push().getKey();
+        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, mContext);
+        Map<String, Object> postValues = appUsage.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put(childName + key, postValues);
+        childUpdates.put("/ig-usage/" + key, postValues);
+
+        mDatabase.updateChildren(childUpdates);
     }
 }
