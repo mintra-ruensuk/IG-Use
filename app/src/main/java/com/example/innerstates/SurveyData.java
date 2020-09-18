@@ -18,10 +18,11 @@ public class SurveyData {
         this.uid = uid;
         this.status = INCOMPLETE;
         answer = new HashMap<>();
-        answer.put("type_of_communication", "");
-        answer.put("s1", 0);
-        answer.put("s2", 0);
-        answer.put("e1", 0);
+        answer.put("t1", "0"); // type of communication
+        answer.put("s1", "0"); // social comparison 1
+        answer.put("s2", "0"); // social comparison 2
+        answer.put("e1", "0"); // envy 1
+        answer.put("e2", "0"); // envy 2
     }
 
     @Exclude
@@ -33,5 +34,9 @@ public class SurveyData {
         result.put("answer", answer);
 
         return result;
+    }
+
+    public HashMap<String, Object> getAnswer() {
+        return answer;
     }
 }

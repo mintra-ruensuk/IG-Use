@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -18,18 +19,23 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.innerstates.lang.EnglishQuestion;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 public class SurveyActivity extends AppCompatActivity {
     private HashMap<String, Question[]> surveyQuestion = new HashMap<String, Question[]>();
+    private HashMap<String, Object> surveyAnswer = new HashMap<String, Object>();
     private int currentPage = 1;
     private LinearLayout questionLayOut;
     private int totalPage = 9;
@@ -57,16 +63,17 @@ public class SurveyActivity extends AppCompatActivity {
                 Settings.Secure.ANDROID_ID);
 
         createSurvey();
-
+        pushSurveyDataToDB();
 
         displaySurvey();
 
-        pushSurveyDataToDB();
+
 
     }
 
     private void displaySurvey() {
         MainActivity.cancelNotification(mContext);
+        populateSurveyAnswer();
 
         Log.d("tagtag----", "Displaying survey... " + currentPage);
         String page = "page" + currentPage;
@@ -163,6 +170,25 @@ public class SurveyActivity extends AppCompatActivity {
         childUpdates.put("/survey_data/" + surveyKey, postValues);
 
         mDatabase.updateChildren(childUpdates);
+
+        surveyAnswer = surveyData.getAnswer();
+        mDatabase.child("/survey_data/" + surveyKey + "/answer/").addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                surveyAnswer.clear();
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String key = ds.getKey();
+                    String value = ds.getValue(String.class);
+                    surveyAnswer.put(key, value);
+//                    Log.d("tatat--->", surveyAnswer.toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     private void createSurvey() {
@@ -170,11 +196,13 @@ public class SurveyActivity extends AppCompatActivity {
         Question socialCompare2 = new Question("s2", EnglishQuestion.social2, disToAgree());
 
         Question envy1 = new Question("e1", EnglishQuestion.envy1, disToAgree());
+        Question envy2 = new Question("e2", EnglishQuestion.envy1, disToAgree());
         surveyQuestion.put("page1", new Question[] {socialCompare1, socialCompare2});
-        surveyQuestion.put("page2", new Question[] {envy1, socialCompare2});
+        surveyQuestion.put("page2", new Question[] {envy1, envy2});
     }
 
     private RadioGroup createRadioButton(Choice[] choices, String questionId) {
+        String selectedAnswer = (String) surveyAnswer.get(questionId);
 
         final RadioButton[] rb = new RadioButton[choices.length];
         RadioGroup rg = new RadioGroup(this); //create the RadioGroup
@@ -188,6 +216,8 @@ public class SurveyActivity extends AppCompatActivity {
             rb[i].setButtonDrawable(null);
             rb[i].setWidth(200);
 
+
+
             TypedArray a = getTheme().obtainStyledAttributes(R.style.AppTheme, new int[] {android.R.attr.listChoiceIndicatorSingle});
             int attributeResourceId = a.getResourceId(0, 0);
             Drawable drawable = getResources().getDrawable(attributeResourceId);
@@ -196,25 +226,35 @@ public class SurveyActivity extends AppCompatActivity {
             rb[i].setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
             rb[i].setGravity(Gravity.CENTER | Gravity.BOTTOM);
 
-            rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                    RadioButton radioButton = (RadioButton) findViewById(i);
-                    Log.d("Tatag", "-------->>> " + radioButton.getTag());
-                    saveChoiceToFirebase(radioButton.getTag().toString());
-                }
-            });
+            if( (i+1) == Integer.parseInt(selectedAnswer)) {
+                Log.d("ttag--->>>", "id-> "+ questionId + " .... selectedAnswer-> " + selectedAnswer);
+                rb[i].setChecked(true);
+            }
+
+
 
             rg.addView(rb[i]);
 
         }
+        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                RadioButton radioButton = (RadioButton) findViewById(i);
+                Log.d("Tatag", "-------->>> " + radioButton.getTag());
+                saveChoiceToFirebase(radioButton.getTag().toString());
+            }
+        });
         return rg;
+
+    }
+
+    private void populateSurveyAnswer() {
 
     }
 
     private void saveChoiceToFirebase(String answerString) {
         String answerKey = answerString.substring(0,2);
-        int answerValue = Integer.parseInt(answerString.substring(2,3));
+        String answerValue = answerString.substring(2,3);
 
         String childName1 = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
         String childName2 = "/survey_data/" + surveyKey;

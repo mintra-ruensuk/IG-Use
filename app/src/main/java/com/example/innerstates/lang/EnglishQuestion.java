@@ -6,4 +6,5 @@ public class EnglishQuestion {
     public static String social2 = "I was wanting to find out how well I do things compared to people I follow on Instagram";
 
     public static String envy1 = "I was generally feel inferior to others";
+    public static String envy2 = "EV2 I was generally feel inferior to others";
 }
