@@ -308,14 +308,14 @@ public class MainActivity extends AppCompatActivity {
     private void writeNewAppUsage(String appPackageName, String status, Context context) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
-        String childName = "/users/" + userUniqueId + "/ig-usage/";
+        String childName = "/users/" + userUniqueId + "/ig_usage/";
         String key = mDatabase.child(childName).push().getKey();
         AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, mContext);
         Map<String, Object> postValues = appUsage.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put(childName + key, postValues);
-        childUpdates.put("/ig-usage/" + key, postValues);
+        childUpdates.put("/ig_usage/" + key, postValues);
 
         mDatabase.updateChildren(childUpdates);
     }

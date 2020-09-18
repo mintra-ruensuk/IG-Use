@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -16,13 +17,16 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.example.innerstates.lang.EnglishQuestion;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.HashMap;
+import java.util.Map;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.drawable.DrawableCompat;
-
-import com.example.innerstates.lang.EnglishQuestion;
 
 public class SurveyActivity extends AppCompatActivity {
     private HashMap<String, Question[]> surveyQuestion = new HashMap<String, Question[]>();
@@ -30,6 +34,13 @@ public class SurveyActivity extends AppCompatActivity {
     private LinearLayout questionLayOut;
     private int totalPage = 9;
     private Context mContext;
+    private String userUniqueId;
+    private String surveyKey;
+    private int radioButtonId = 0;
+
+    // Write a message to the database
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference mDatabase = database.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +52,16 @@ public class SurveyActivity extends AppCompatActivity {
         mContext = this.getBaseContext();
         questionLayOut = findViewById(R.id.questionLayout);
 
+        // Set up user's unique ID (device id)
+        userUniqueId = Settings.Secure.getString(mContext.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+
         createSurvey();
+
 
         displaySurvey();
 
-
+        pushSurveyDataToDB();
 
     }
 
@@ -69,7 +85,7 @@ public class SurveyActivity extends AppCompatActivity {
             textView.setTypeface(null, Typeface.BOLD);
 
             questionLayOut.addView(textView);
-            questionLayOut.addView(createRadioButton(question.getChoices()));
+            questionLayOut.addView(createRadioButton(question.getChoices(), question.getId()));
 
         }
 
@@ -133,17 +149,32 @@ public class SurveyActivity extends AppCompatActivity {
         currentPage -= 1;
         displaySurvey();
     }
+    private void pushSurveyDataToDB() {
+        // Create new post at /user-posts/$userid/$postid and at
+        // /posts/$postid simultaneously
+        String childName = "/users/" + userUniqueId + "/survey_data/";
+        surveyKey = mDatabase.child(childName).push().getKey();
+//        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, mContext);
+        SurveyData surveyData = new SurveyData(userUniqueId);
+        Map<String, Object> postValues = surveyData.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put(childName + surveyKey, postValues);
+        childUpdates.put("/survey_data/" + surveyKey, postValues);
+
+        mDatabase.updateChildren(childUpdates);
+    }
 
     private void createSurvey() {
-        Question socialCompare1 = new Question("social1", EnglishQuestion.social1, disToAgree());
-        Question socialCompare2 = new Question("social2", EnglishQuestion.social2, disToAgree());
+        Question socialCompare1 = new Question("s1", EnglishQuestion.social1, disToAgree());
+        Question socialCompare2 = new Question("s2", EnglishQuestion.social2, disToAgree());
 
-        Question envy1 = new Question("envy1", EnglishQuestion.envy1, disToAgree());
+        Question envy1 = new Question("e1", EnglishQuestion.envy1, disToAgree());
         surveyQuestion.put("page1", new Question[] {socialCompare1, socialCompare2});
         surveyQuestion.put("page2", new Question[] {envy1, socialCompare2});
     }
 
-    private RadioGroup createRadioButton(Choice[] choices) {
+    private RadioGroup createRadioButton(Choice[] choices, String questionId) {
 
         final RadioButton[] rb = new RadioButton[choices.length];
         RadioGroup rg = new RadioGroup(this); //create the RadioGroup
@@ -152,7 +183,8 @@ public class SurveyActivity extends AppCompatActivity {
         for (int i = 0; i < choices.length; i++) {
             rb[i] = new RadioButton(this);
             rb[i].setText(choices[i].getChoiceTitle());
-            rb[i].setId(choices[i].getChoiceValue() + 100);
+            rb[i].setId(++radioButtonId);
+            rb[i].setTag(questionId + choices[i].getChoiceValue());
             rb[i].setButtonDrawable(null);
             rb[i].setWidth(200);
 
@@ -163,11 +195,31 @@ public class SurveyActivity extends AppCompatActivity {
 
             rb[i].setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
             rb[i].setGravity(Gravity.CENTER | Gravity.BOTTOM);
+
+            rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                    RadioButton radioButton = (RadioButton) findViewById(i);
+                    Log.d("Tatag", "-------->>> " + radioButton.getTag());
+                    saveChoiceToFirebase(radioButton.getTag().toString());
+                }
+            });
+
             rg.addView(rb[i]);
 
         }
         return rg;
 
+    }
+
+    private void saveChoiceToFirebase(String answerString) {
+        String answerKey = answerString.substring(0,2);
+        int answerValue = Integer.parseInt(answerString.substring(2,3));
+
+        String childName1 = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
+        String childName2 = "/survey_data/" + surveyKey;
+        mDatabase.child(childName1).child("answer").child(answerKey).setValue(answerValue);
+        mDatabase.child(childName2).child("answer").child(answerKey).setValue(answerValue);
     }
 
     private Choice[] disToAgree() {

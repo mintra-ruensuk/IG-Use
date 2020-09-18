@@ -4,6 +4,7 @@ public class Question {
     private String questionTitle;
     private Choice[] choices;
     private String id;
+    private String answer;
     public Question() {
 
     }
@@ -32,5 +33,14 @@ public class Question {
 
     public void setChoices(Choice[] choices) {
         this.choices = choices;
+    }
+
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 }

@@ -19,9 +19,9 @@ public class SurveyData {
         this.status = INCOMPLETE;
         answer = new HashMap<>();
         answer.put("type_of_communication", "");
-        answer.put("social1", 0);
-        answer.put("social2", 0);
-        answer.put("envy1", 0);
+        answer.put("s1", 0);
+        answer.put("s2", 0);
+        answer.put("e1", 0);
     }
 
     @Exclude
