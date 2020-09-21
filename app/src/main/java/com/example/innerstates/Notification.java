@@ -12,20 +12,20 @@ public class Notification {
 
     private long timeStamp;
     private String status;
-    private String uid;
-    private String id;
+    private String userId;
+    private int notificatioId;
 
-    public Notification(String uid, String id) {
+    public Notification(String uid, int notificatioId) {
         this.timeStamp = System.currentTimeMillis() / 1000L;
         this.status = NOTIFY;
-        this.uid = uid;
-        this.id = id;
+        this.userId = uid;
+        this.notificatioId = notificatioId;
     }
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("user_id", uid);
-        result.put("notification_id", id);
+        result.put("user_id", userId);
+        result.put("notification_id", notificatioId);
         result.put("time_stamp", timeStamp);
         result.put("status", status);
         return result;

@@ -25,6 +25,7 @@ import com.rvalerio.fgchecker.AppChecker;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     final static String CHANNEL_ID = "123456";
     private Context mContext;
     private String igPackageName = "com.instagram.android";
-    final static int notificationId = 9876;
+
     private String userUniqueId;
     private String lastForegroundApp = "";
     private Sample sample;
@@ -91,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
                 .setContentText("Seem that you've just used Instagram. How do you feel?")
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText("You've just used Instagram. How do you feel now?"))
-//                .setContentIntent(pendingIntent)
                 .setFullScreenIntent(pendingIntent, true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
@@ -122,12 +122,7 @@ public class MainActivity extends AppCompatActivity {
                         sample.setStatus(Sample.POPUP);
 //                        sleep(2000);
 
-                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mContext);
-
-                        // notificationId is a unique int for each notification that you must define
-                        //TODO: Need to create notification id and notification object
-                        notificationManager.notify(notificationId, builder.build());
-
+                        notifyHowYouFeel(builder);
                         sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
                         sleep(2000);
                         sample.setStatus(Sample.READY);
@@ -166,11 +161,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void cancelNotification(Context ctx) {
-        String ns = Context.NOTIFICATION_SERVICE;
-        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
-        nMgr.cancel(notificationId);
-    }
+//    public static void cancelNotification(Context ctx) {
+//        String ns = Context.NOTIFICATION_SERVICE;
+//        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
+//        nMgr.cancel(notificationId);
+//    }
     public static void cancelNotification(Context ctx, int notifyId) {
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
@@ -288,13 +283,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private int generateFiveDigit() {
+        Random r = new Random( System.currentTimeMillis() );
+        return ((1 + r.nextInt(2)) * 10000 + r.nextInt(10000));
+    }
+
+    private void notifyHowYouFeel(NotificationCompat.Builder builder) {
+        int notificationId = generateFiveDigit();
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mContext);
+
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(notificationId, builder.build());
+        writeNewNotification(notificationId);
+
+    }
+
     private void writeNewUser() {
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (!snapshot.child("users").hasChild(userUniqueId)) {
-                    User user = new User("participant" + userUniqueId);
+                    User user = new User(userUniqueId);
                     mDatabase.child("users").child(userUniqueId).setValue(user);
                 }
             }
@@ -320,11 +331,11 @@ public class MainActivity extends AppCompatActivity {
         mDatabase.updateChildren(childUpdates);
     }
 
-    private void writeNewNotification() {
+    private void writeNewNotification(int notificationId) {
 
         String childName = "/users/" + userUniqueId + "/notification/";
         String key = mDatabase.child(childName).push().getKey();
-        Notification appUsage = new Notification(userUniqueId);
+        Notification appUsage = new Notification(userUniqueId, notificationId);
         Map<String, Object> postValues = appUsage.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();

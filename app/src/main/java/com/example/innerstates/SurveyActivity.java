@@ -72,7 +72,7 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void displaySurvey() {
-        MainActivity.cancelNotification(mContext);
+//        MainActivity.cancelNotification(mContext);
         populateSurveyAnswer();
 
         Log.d("tagtag----", "Displaying survey... " + currentPage);

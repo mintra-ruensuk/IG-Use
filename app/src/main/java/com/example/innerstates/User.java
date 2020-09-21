@@ -9,7 +9,7 @@ import java.util.Date;
 @IgnoreExtraProperties
 public class User {
 
-    public String username;
+    public String id;
     public String createdTime;
     public long createdUnixTime;
     public String osVersion;
@@ -23,8 +23,8 @@ public class User {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String username) {
-        this.username = username;
+    public User(String id) {
+        this.id = id;
         this.createdTime = new Date().toString();
         this.osVersion = System.getProperty("os.version"); // OS version
         this.sdkInt = Build.VERSION.SDK_INT;
