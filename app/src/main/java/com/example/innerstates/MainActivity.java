@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private Sample sample;
     private Sample igUsage;
     final AppChecker appChecker = new AppChecker();
-
+    private long igOpenTime = 0;
 
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -80,20 +80,7 @@ public class MainActivity extends AppCompatActivity {
         userUniqueId = Settings.Secure.getString(mContext.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
-        // Create an explicit intent for an Activity in your app
-        Intent intent = new Intent(this, SurveyActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-
-        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.my_icon)
-                .setContentTitle("How do you feel now?")
-                .setContentText("Seem that you've just used Instagram. How do you feel?")
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText("You've just used Instagram. How do you feel now?"))
-                .setFullScreenIntent(pendingIntent, true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
 
 
@@ -115,17 +102,24 @@ public class MainActivity extends AppCompatActivity {
                             && packageName.equals(igPackageName)) {
                         sample.setStatus(Sample.IG_OPENED);
                         Log.d("tagtag", "IG IS OPENing ===>>>>>>>>>>>>>>>>>>>>");
+                        igOpenTime = System.currentTimeMillis();
                     }
                     if (sample.getStatus() == Sample.IG_OPENED
                             && !packageName.equals(igPackageName)) {
                         Log.d("tagtag", "IG IS CLOSED ===>>>>>>>>>>>>>>>>>>>>");
-                        sample.setStatus(Sample.POPUP);
+
+                        long test = System.currentTimeMillis();
+                        if(test >= (igOpenTime + 15*1000)) { //multiply by 1000 to get milliseconds
+                            sample.setStatus(Sample.POPUP);
 //                        sleep(2000);
 
-                        notifyHowYouFeel(builder);
-                        sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
-                        sleep(2000);
-                        sample.setStatus(Sample.READY);
+                            notifyHowYouFeel();
+                            sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
+                            sleep(2000);
+                            sample.setStatus(Sample.READY);
+                        }
+
+
                     }
 
                 lastForegroundApp = packageName;
@@ -288,8 +282,23 @@ public class MainActivity extends AppCompatActivity {
         return ((1 + r.nextInt(2)) * 10000 + r.nextInt(10000));
     }
 
-    private void notifyHowYouFeel(NotificationCompat.Builder builder) {
+    private void notifyHowYouFeel() {
         int notificationId = generateFiveDigit();
+
+        // Create an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, SurveyActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.my_icon)
+                .setContentTitle("How do you feel now?")
+                .setContentText("Seem that you've just used Instagram. How do you feel?")
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText("You've just used Instagram. How do you feel now?"))
+                .setFullScreenIntent(pendingIntent, true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mContext);
 
