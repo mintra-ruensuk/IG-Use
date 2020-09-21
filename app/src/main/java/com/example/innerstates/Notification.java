@@ -24,7 +24,7 @@ public class Notification {
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("uid", uid);
+        result.put("user_id", uid);
         result.put("notification_id", id);
         result.put("time_stamp", timeStamp);
         result.put("status", status);

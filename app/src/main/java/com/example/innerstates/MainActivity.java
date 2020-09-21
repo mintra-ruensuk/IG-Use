@@ -183,9 +183,10 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
+//            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
@@ -306,8 +307,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void writeNewAppUsage(String appPackageName, String status, Context context) {
-        // Create new post at /user-posts/$userid/$postid and at
-        // /posts/$postid simultaneously
+
         String childName = "/users/" + userUniqueId + "/ig_usage/";
         String key = mDatabase.child(childName).push().getKey();
         AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, mContext);
@@ -316,6 +316,20 @@ public class MainActivity extends AppCompatActivity {
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put(childName + key, postValues);
         childUpdates.put("/ig_usage/" + key, postValues);
+
+        mDatabase.updateChildren(childUpdates);
+    }
+
+    private void writeNewNotification() {
+
+        String childName = "/users/" + userUniqueId + "/notification/";
+        String key = mDatabase.child(childName).push().getKey();
+        Notification appUsage = new Notification(userUniqueId);
+        Map<String, Object> postValues = appUsage.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put(childName + key, postValues);
+        childUpdates.put("/notification/" + key, postValues);
 
         mDatabase.updateChildren(childUpdates);
     }

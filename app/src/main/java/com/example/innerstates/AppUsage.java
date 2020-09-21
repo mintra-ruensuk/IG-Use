@@ -38,7 +38,7 @@ public class AppUsage {
         HashMap<String, Object> result = new HashMap<>();
         result.put("uid", uid);
         result.put("package_name", appPackageName);
-        result.put("time", actionTimestamp);
+        result.put("time_stamp", actionTimestamp);
         result.put("status", status);
         result.put("is_wifi_connected", isWiFiConnected);
 
