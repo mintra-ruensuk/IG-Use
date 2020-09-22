@@ -13,6 +13,10 @@ public class SurveyData {
     private String status;
     private HashMap<String, Object> answer ;
 
+    public SurveyData() {
+
+    }
+
     public SurveyData(String uid) {
         this.timeStamp = System.currentTimeMillis() / 1000L;
         this.uid = uid;

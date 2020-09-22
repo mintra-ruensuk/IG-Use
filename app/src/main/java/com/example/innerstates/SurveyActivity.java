@@ -1,5 +1,6 @@
 package com.example.innerstates;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -23,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -65,6 +67,11 @@ public class SurveyActivity extends AppCompatActivity {
         createSurvey();
         pushSurveyDataToDB();
 
+        if(savedInstanceState != null) {
+            cancelNotification(mContext, savedInstanceState.getInt("notificationId"));
+            changeNotificationStatus(savedInstanceState.getInt("notificationId"));
+        }
+
         displaySurvey();
 
 
@@ -72,7 +79,8 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void displaySurvey() {
-//        MainActivity.cancelNotification(mContext);
+
+
         populateSurveyAnswer();
 
         Log.d("tagtag----", "Displaying survey... " + currentPage);
@@ -270,5 +278,29 @@ public class SurveyActivity extends AppCompatActivity {
         choices[3] = new Choice("I agree", 4);
         choices[4] = new Choice("I strongly agree", 5);
         return choices;
+    }
+
+    public void cancelNotification(Context ctx, int notificationId) {
+        String ns = Context.NOTIFICATION_SERVICE;
+        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
+        nMgr.cancel(notificationId);
+    }
+
+    public void changeNotificationStatus(int notificationId) {
+
+
+        String childName = "/users/" + userUniqueId + "/notification/";
+        Query searchQuery = mDatabase.child(childName).orderByChild("notification_id").equalTo(notificationId);
+
+        searchQuery.re
+
+        Notification appUsage = new Notification(userUniqueId, notificationId);
+        Map<String, Object> postValues = appUsage.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put(childName + key, postValues);
+        childUpdates.put("/notification/" + key, postValues);
+
+        mDatabase.updateChildren(childUpdates);
     }
 }

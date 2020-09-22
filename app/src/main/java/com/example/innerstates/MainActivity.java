@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private Sample igUsage;
     final AppChecker appChecker = new AppChecker();
     private long igOpenTime = 0;
+    private int notificationId;
 
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -155,11 +156,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    public static void cancelNotification(Context ctx) {
-//        String ns = Context.NOTIFICATION_SERVICE;
-//        NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
-//        nMgr.cancel(notificationId);
-//    }
+
     public static void cancelNotification(Context ctx, int notifyId) {
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
@@ -283,11 +280,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void notifyHowYouFeel() {
-        int notificationId = generateFiveDigit();
+        notificationId = generateFiveDigit();
 
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(this, SurveyActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra("notificationId", notificationId);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
 
