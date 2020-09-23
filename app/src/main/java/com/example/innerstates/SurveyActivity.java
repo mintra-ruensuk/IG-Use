@@ -211,6 +211,7 @@ public class SurveyActivity extends AppCompatActivity {
         surveyQuestion.put("page2", new Question[] {envy1, envy2});
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private RadioGroup createRadioButton(Choice[] choices, String questionId) {
         String selectedAnswer = (String) surveyAnswer.get(questionId);
 
@@ -230,7 +231,8 @@ public class SurveyActivity extends AppCompatActivity {
 
             TypedArray a = getTheme().obtainStyledAttributes(R.style.AppTheme, new int[] {android.R.attr.listChoiceIndicatorSingle});
             int attributeResourceId = a.getResourceId(0, 0);
-            Drawable drawable = getResources().getDrawable(attributeResourceId);
+//            Drawable drawable = getResources().getDrawable(attributeResourceId);
+            Drawable drawable = mContext.getDrawable(attributeResourceId);
             DrawableCompat.setTint(drawable, Color.BLUE);
 
             rb[i].setCompoundDrawablesWithIntrinsicBounds(null, drawable, null, null);
