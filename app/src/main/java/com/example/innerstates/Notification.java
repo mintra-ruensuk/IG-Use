@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Notification {
-    private static final String NOTIFY = "notified";
-    private static final String MISSED = "missed";
-    private static final String OPENED = "opened";
+    public static final String NOTIFY = "notified";
+    public static final String MISSED = "missed";
+    public static final String OPENED = "opened";
 
     private long createdTimeStamp;
     private long openedTimeStamp;

@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 //                Log.d("tagtagtag",packageName+"----=-=-==============");
-                Log.d("tagtag", sample.getReadableStatus());
+//                Log.d("tagtag", sample.getReadableStatus());
                 if (packageName != null) {
 
                     recordIgUsage(packageName);
@@ -102,15 +101,16 @@ public class MainActivity extends AppCompatActivity {
                     if (sample.getStatus() == Sample.READY
                             && packageName.equals(igPackageName)) {
                         sample.setStatus(Sample.IG_OPENED);
-                        Log.d("tagtag", "IG IS OPENing ===>>>>>>>>>>>>>>>>>>>>");
+//                        Log.d("tagtag", "IG IS OPENing ===>>>>>>>>>>>>>>>>>>>>");
                         igOpenTime = System.currentTimeMillis();
                     }
                     if (sample.getStatus() == Sample.IG_OPENED
                             && !packageName.equals(igPackageName)) {
-                        Log.d("tagtag", "IG IS CLOSED ===>>>>>>>>>>>>>>>>>>>>");
+//                        Log.d("tagtag", "IG IS CLOSED ===>>>>>>>>>>>>>>>>>>>>");
 
                         long test = System.currentTimeMillis();
-                        if(test >= (igOpenTime + 15*1000)) { //multiply by 1000 to get milliseconds
+//                        if(test >= (igOpenTime + 15*1000)) { //multiply by 1000 to get milliseconds
+                        if(test >= (igOpenTime + 1*1000)) {
                             sample.setStatus(Sample.POPUP);
 //                        sleep(2000);
 
@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SurveyActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("notificationId", notificationId);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -341,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
     private void writeNewNotification(int notificationId) {
 
         String childName = "/users/" + userUniqueId + "/notification/";
-        String key = mDatabase.child(childName).push().getKey();
+        String key = mDatabase.child(childName).child(notificationId + "").getKey();
         Notification appUsage = new Notification(userUniqueId, notificationId);
         Map<String, Object> postValues = appUsage.toMap();
 

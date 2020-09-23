@@ -24,7 +24,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -64,12 +63,15 @@ public class SurveyActivity extends AppCompatActivity {
         userUniqueId = Settings.Secure.getString(mContext.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
+        Log.d("tagtag", "user unique id --> " + userUniqueId.toString());
         createSurvey();
         pushSurveyDataToDB();
 
-        if(savedInstanceState != null) {
-            cancelNotification(mContext, savedInstanceState.getInt("notificationId"));
-            changeNotificationStatus(savedInstanceState.getInt("notificationId"));
+        int notificationId = getIntent().getExtras().getInt("notificationId");
+        if(notificationId > 0) {
+            cancelNotification(mContext, notificationId);
+            changeNotificationStatus(notificationId);
+            Log.d("tagtag", "Yeah --> " + userUniqueId.toString());
         }
 
         displaySurvey();
@@ -288,19 +290,16 @@ public class SurveyActivity extends AppCompatActivity {
 
     public void changeNotificationStatus(int notificationId) {
 
+        long open_time_stamp = System.currentTimeMillis() / 1000L;
 
         String childName = "/users/" + userUniqueId + "/notification/";
-        Query searchQuery = mDatabase.child(childName).orderByChild("notification_id").equalTo(notificationId);
+        String childName2 = "/notification/";
 
-        searchQuery.re
+        mDatabase.child(childName).child(notificationId+"").child("status").setValue(Notification.OPENED);
+        mDatabase.child(childName).child(notificationId+"").child("open_time_stamp").setValue(open_time_stamp);
 
-        Notification appUsage = new Notification(userUniqueId, notificationId);
-        Map<String, Object> postValues = appUsage.toMap();
+        mDatabase.child(childName2).child(notificationId+"").child("status").setValue(Notification.OPENED);
+        mDatabase.child(childName2).child(notificationId+"").child("open_time_stamp").setValue(open_time_stamp);
 
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(childName + key, postValues);
-        childUpdates.put("/notification/" + key, postValues);
-
-        mDatabase.updateChildren(childUpdates);
     }
 }
