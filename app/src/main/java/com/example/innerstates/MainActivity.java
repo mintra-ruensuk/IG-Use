@@ -44,10 +44,11 @@ public class MainActivity extends AppCompatActivity {
 
     private String userUniqueId;
     private String lastForegroundApp = "";
-    private Sample sample;
+    public Sample sample;
     private Sample igUsage;
     final AppChecker appChecker = new AppChecker();
     private long igOpenTime = 0;
+    private long notifyTime = 0;
     private int notificationId;
 
     // Write a message to the database
@@ -98,32 +99,48 @@ public class MainActivity extends AppCompatActivity {
 
                     recordIgUsage(packageName);
 
+                    // IF 1.5 hours has passed... then do this:
                     if (sample.getStatus() == Sample.READY
                             && packageName.equals(igPackageName)) {
                         sample.setStatus(Sample.IG_OPENED);
-//                        Log.d("tagtag", "IG IS OPENing ===>>>>>>>>>>>>>>>>>>>>");
                         igOpenTime = System.currentTimeMillis();
                     }
                     if (sample.getStatus() == Sample.IG_OPENED
                             && !packageName.equals(igPackageName)) {
-//                        Log.d("tagtag", "IG IS CLOSED ===>>>>>>>>>>>>>>>>>>>>");
 
                         long test = System.currentTimeMillis();
+                        // Use IG at least 15 seconds
 //                        if(test >= (igOpenTime + 15*1000)) { //multiply by 1000 to get milliseconds
                         if(test >= (igOpenTime + 1*1000)) {
                             sample.setStatus(Sample.POPUP);
-//                        sleep(2000);
+
 
                             notifyHowYouFeel();
-                            sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
-                            sleep(2000);
-                            sample.setStatus(Sample.READY);
+//                            sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
+//                            sleep(2000);
+
                         }
 
 
                     }
+                    if (sample.getStatus() == Sample.POPUP) {
+                        // 5 minutes = 300seconds
+                        if(notifyTime != 0 && System.currentTimeMillis() >= (notifyTime + 60*1000)) {
+                            cancelNotification(mContext, notificationId);
+                            recordCancelNotification(notificationId);
+                            notifyTime = 0;
 
-                lastForegroundApp = packageName;
+                            sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
+
+                        }
+                    }
+                    if (sample.getStatus() == Sample.WAIT_FOR_NEXT_POPUP) {
+                        sample.setStatus(Sample.READY);
+                    }
+
+                    lastForegroundApp = packageName;
+
+
 
                 }
 
@@ -136,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
 
     @Override
     protected void onResume() {
@@ -296,7 +314,8 @@ public class MainActivity extends AppCompatActivity {
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText("You've just used Instagram. How do you feel now?"))
                 .setFullScreenIntent(pendingIntent, true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+//                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(mContext);
 
@@ -350,5 +369,18 @@ public class MainActivity extends AppCompatActivity {
         childUpdates.put("/notification/" + key, postValues);
 
         mDatabase.updateChildren(childUpdates);
+
+        notifyTime = System.currentTimeMillis();
+    }
+
+    public void recordCancelNotification(int notificationId) {
+
+        String childName = "/users/" + userUniqueId + "/notification/";
+        String childName2 = "/notification/";
+
+        mDatabase.child(childName).child(notificationId+"").child("status").setValue(Notification.MISSED);
+
+        mDatabase.child(childName2).child(notificationId+"").child("status").setValue(Notification.MISSED);
+
     }
 }

@@ -76,7 +76,7 @@ public class SurveyActivity extends AppCompatActivity {
 
         displaySurvey();
 
-
+//        MainActivity.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
 
     }
 
