@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String userUniqueId;
     private String lastForegroundApp = "";
-    public Sample sample;
+    public static Sample sample;
     private Sample igUsage;
     final AppChecker appChecker = new AppChecker();
     private long igOpenTime = 0;
