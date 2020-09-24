@@ -28,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -170,9 +171,12 @@ public class SurveyActivity extends AppCompatActivity {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
         String childName = "/users/" + userUniqueId + "/survey_data/";
-        surveyKey = mDatabase.child(childName).push().getKey();
+        String surveyId = UUID.randomUUID().toString();
+
+//        surveyKey = mDatabase.child(childName).push().getKey();
+        surveyKey = mDatabase.child(childName).child(surveyId).getKey();
 //        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, mContext);
-        SurveyData surveyData = new SurveyData(userUniqueId);
+        SurveyData surveyData = new SurveyData(userUniqueId, surveyId);
         Map<String, Object> postValues = surveyData.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();

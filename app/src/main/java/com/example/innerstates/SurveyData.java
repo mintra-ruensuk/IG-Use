@@ -11,16 +11,19 @@ public class SurveyData {
     private long timeStamp;
     private String uid;
     private String status;
+    private String pageFlow;
+    private String surveyId;
     private HashMap<String, Object> answer ;
 
     public SurveyData() {
 
     }
-
-    public SurveyData(String uid) {
+    public SurveyData(String uid, String surveyId) {
         this.timeStamp = System.currentTimeMillis() / 1000L;
         this.uid = uid;
         this.status = INCOMPLETE;
+        this.pageFlow = "";
+        this.surveyId = surveyId;
         answer = new HashMap<>();
         answer.put("t1", "0"); // type of communication
         answer.put("s1", "0"); // social comparison 1
@@ -35,6 +38,8 @@ public class SurveyData {
         result.put("user_id", uid);
         result.put("time_stamp", timeStamp);
         result.put("status", status);
+        result.put("page_flow", status);
+        result.put("survey_id", surveyId);
         result.put("answer", answer);
 
         return result;

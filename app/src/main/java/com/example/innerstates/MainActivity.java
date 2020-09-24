@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (sample.getStatus() == Sample.WAIT_FOR_NEXT_POPUP) {
                         //wait for 1.5 hours and then set ready state
-                        if(System.currentTimeMillis() >= (startWaitNextNotificationTime + 120*1000)) {
+                        if(System.currentTimeMillis() >= (startWaitNextNotificationTime + 20*1000)) {
                             sample.setStatus(Sample.READY);
                         }
                     }
