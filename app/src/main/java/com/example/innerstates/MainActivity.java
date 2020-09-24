@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private long igOpenTime = 0;
     private long notifyTime = 0;
     private int notificationId;
+    public static long startWaitNextNotificationTime = 0;
 
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -85,8 +87,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-        //LOG APP USAGE OPEN AND CLOSE ดีไหม
         appChecker.other(new AppChecker.Listener() {
             @Override
             public void onForeground(String packageName) {
@@ -94,9 +94,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 //                Log.d("tagtagtag",packageName+"----=-=-==============");
-//                Log.d("tagtag", sample.getReadableStatus());
-                if (packageName != null) {
 
+                if (packageName != null) {
+                    Log.d("tagtag-------------->", sample.getReadableStatus());
                     recordIgUsage(packageName);
 
                     // IF 1.5 hours has passed... then do this:
@@ -110,12 +110,12 @@ public class MainActivity extends AppCompatActivity {
 
                         long test = System.currentTimeMillis();
                         // Use IG at least 15 seconds
-//                        if(test >= (igOpenTime + 15*1000)) { //multiply by 1000 to get milliseconds
                         if(test >= (igOpenTime + 1*1000)) {
                             sample.setStatus(Sample.POPUP);
 
 
                             notifyHowYouFeel();
+                            notifyTime = System.currentTimeMillis();
 //                            sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
 //                            sleep(2000);
 
@@ -125,17 +125,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (sample.getStatus() == Sample.POPUP) {
                         // 5 minutes = 300seconds
-                        if(notifyTime != 0 && System.currentTimeMillis() >= (notifyTime + 60*1000)) {
+                        if(System.currentTimeMillis() >= (notifyTime + 60*1000)) {
                             cancelNotification(mContext, notificationId);
                             recordCancelNotification(notificationId);
-                            notifyTime = 0;
 
-                            sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
-
+                            sample.setStatus(Sample.READY);
                         }
                     }
                     if (sample.getStatus() == Sample.WAIT_FOR_NEXT_POPUP) {
-                        sample.setStatus(Sample.READY);
+                        //wait for 1.5 hours and then set ready state
+                        if(System.currentTimeMillis() >= (startWaitNextNotificationTime + 120*1000)) {
+                            sample.setStatus(Sample.READY);
+                        }
                     }
 
                     lastForegroundApp = packageName;
@@ -370,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
 
         mDatabase.updateChildren(childUpdates);
 
-        notifyTime = System.currentTimeMillis();
+
     }
 
     public void recordCancelNotification(int notificationId) {

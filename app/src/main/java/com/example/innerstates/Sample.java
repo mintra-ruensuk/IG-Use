@@ -16,7 +16,12 @@ public class Sample {
     public boolean getIsIgOpenFirst() { return this.isIgOpenFirst;}
     public void setIsIgOpenFirst(boolean ele) { this.isIgOpenFirst = ele;}
     public int getStatus() { return this.status; }
-    public void setStatus(int status) { this.status = status; }
+    public void setStatus(int status) {
+        if(status == WAIT_FOR_NEXT_POPUP) {
+            MainActivity.startWaitNextNotificationTime = System.currentTimeMillis();
+        }
+        this.status = status;
+    }
     public String getReadableStatus() {
         switch (this.status) {
             case READY: return "READY";
