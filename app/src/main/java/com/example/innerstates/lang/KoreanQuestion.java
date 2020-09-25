@@ -59,6 +59,14 @@ public class KoreanQuestion {
     // How do you feel now?
     public static String sameText = "지금 기분이 어떠세요?";
 
+    // Why do you think you were feeling this way?
+    public static String openQ1 = "왜 이렇게 느꼈다고 생각하십니까?";
+
+    // Describe a few examples of posts or actions (e.g., push like, Direct message, etc.,) you did that make you feel that way.
+    public static String openQ2 = "당신이 그렇게 느끼도록 만든 게시물의 예시 또는 인스타그램 내에서의 행동(예시: 좋아요 누르기, 메시지 보내기 등)을 설명해주세요.";
+
+
+
 
     public static Choice[] choiceCommunication() {
         // For direct communication with others, For consuming information without direct communication with others
@@ -76,6 +84,52 @@ public class KoreanQuestion {
         choices[2] = new Choice("동의도 부정도 하지 않는다 ", 3);
         choices[3] = new Choice("동의한다", 4);
         choices[4] = new Choice("매우 동의한다", 5);
+        return choices;
+    }
+
+    public static Choice[] esteemScale() {
+        // I strongly disagree ---> I strongly agree
+        Choice[] choices = new Choice[4];
+        choices[0] = new Choice("매우 동의하지 않는다", 1);
+        choices[1] = new Choice("동의하지 않는다", 2);
+        choices[2] = new Choice("동의한다", 3);
+        choices[3] = new Choice("매우 동의한다", 4);
+        return choices;
+    }
+
+    public static Choice[] depressScale() {
+
+        Choice[] choices = new Choice[4];
+        choices[0] = new Choice("전혀 그렇지 않았다", 1);
+        choices[1] = new Choice("몇 번 그런적이 있다", 2);
+        choices[2] = new Choice("절반 이상 그랬다", 3);
+        choices[3] = new Choice("거의 항상 그랬다", 4);
+        return choices;
+    }
+
+    public static Choice[] bodyScale() {
+
+        Choice[] choices = new Choice[5];
+        choices[0] = new Choice("전혀 그렇지 않았다", 1);
+        choices[1] = new Choice("", 2);
+        choices[2] = new Choice("", 3);
+        choices[3] = new Choice("", 4);
+        choices[4] = new Choice("거의 항상 그랬다", 5);
+        return choices;
+    }
+
+    public static Choice[] samScale() {
+
+        Choice[] choices = new Choice[9];
+        choices[0] = new Choice("", 1);
+        choices[1] = new Choice("", 2);
+        choices[2] = new Choice("", 3);
+        choices[3] = new Choice("", 4);
+        choices[4] = new Choice("", 5);
+        choices[5] = new Choice("", 6);
+        choices[6] = new Choice("", 7);
+        choices[7] = new Choice("", 8);
+        choices[8] = new Choice("", 9);
         return choices;
     }
 }

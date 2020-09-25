@@ -98,16 +98,43 @@ public class SurveyActivity extends AppCompatActivity {
         progressBar.setProgress((currentPage * 100) / totalPage);
 
         Question questions[] = surveyQuestion.get(page);
-//        if(page.equals("page1")) {
-//            TextView textView = new TextView(this);
-//            textView.setPadding(0,10,0,0);
-//            textView.setText(KoreanQuestion.type_of_communication);
-//            textView.setTextColor(Color.BLACK);
-//            textView.setGravity(Gravity.CENTER);
-//            textView.setTypeface(null, Typeface.BOLD);
-//
-//            questionLayOut.addView(textView);
-//        }
+        if(page.equals("page6")) {
+            TextView textView = new TextView(this);
+            textView.setPadding(0,10,0,50);
+            textView.setText(KoreanQuestion.depress1);
+            textView.setTextColor(Color.BLACK);
+            textView.setGravity(Gravity.CENTER);
+            textView.setTypeface(null, Typeface.BOLD);
+
+            questionLayOut.addView(textView);
+        }else if(page.equals("page8")) {
+            TextView textView = new TextView(this);
+            textView.setPadding(0,10,0,50);
+            textView.setText(KoreanQuestion.sameText);
+            textView.setTextColor(Color.BLACK);
+            textView.setGravity(Gravity.CENTER);
+            textView.setTypeface(null, Typeface.BOLD);
+
+            questionLayOut.addView(textView);
+        }else if(page.equals("page9")) {
+            TextView textView = new TextView(this);
+            textView.setPadding(0,10,0,50);
+            textView.setText(KoreanQuestion.openQ1);
+            textView.setTextColor(Color.BLACK);
+            textView.setGravity(Gravity.CENTER);
+            textView.setTypeface(null, Typeface.BOLD);
+
+            questionLayOut.addView(textView);
+
+            TextView textView2 = new TextView(this);
+            textView2.setPadding(0,10,0,50);
+            textView2.setText(KoreanQuestion.openQ2);
+            textView2.setTextColor(Color.BLACK);
+            textView2.setGravity(Gravity.CENTER);
+            textView2.setTypeface(null, Typeface.BOLD);
+
+            questionLayOut.addView(textView2);
+        }
         for (Question question: questions) {
             TextView textView = new TextView(this);
             textView.setPadding(0,10,0,0);
@@ -139,7 +166,7 @@ public class SurveyActivity extends AppCompatActivity {
 
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             p.weight = 0.5f;
-//            p.gravity = Gravity.CENTER;
+            p.setMargins(0,0,0,50);
 
             Button backButton = new Button(this);
             backButton.setText("Back");
@@ -234,28 +261,54 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void createSurvey() {
-        Question typeCommmu = new Question("t1", KoreanQuestion.type_of_communication, KoreanQuestion.choiceCommunication());
+        Question typeCommmu = new Question("ty1", KoreanQuestion.type_of_communication, KoreanQuestion.choiceCommunication());
 
-        Question socialCompare1 = new Question("s1", EnglishQuestion.social1, EnglishQuestion.disToAgree());
-        Question socialCompare2 = new Question("s2", EnglishQuestion.social2, EnglishQuestion.disToAgree());
+        Question socialCompare1 = new Question("so1", KoreanQuestion.social1, KoreanQuestion.disToAgree());
+        Question socialCompare2 = new Question("so2", KoreanQuestion.social2, KoreanQuestion.disToAgree());
 
-        Question envy1 = new Question("e1", EnglishQuestion.envy1, EnglishQuestion.disToAgree());
-        Question envy2 = new Question("e2", EnglishQuestion.envy1, EnglishQuestion.disToAgree());
+        Question envy1 = new Question("ev1", KoreanQuestion.envy1, KoreanQuestion.disToAgree());
+        Question envy2 = new Question("ev2", KoreanQuestion.envy2, KoreanQuestion.disToAgree());
+        Question envy3 = new Question("ev3", KoreanQuestion.envy3, KoreanQuestion.disToAgree());
+        Question envy4 = new Question("ev4", KoreanQuestion.envy4, KoreanQuestion.disToAgree());
+        Question envy5 = new Question("ev5", KoreanQuestion.envy5, KoreanQuestion.disToAgree());
+        Question envy6 = new Question("ev6", KoreanQuestion.envy6, KoreanQuestion.disToAgree());
+
+        Question esteem1 = new Question("es1", KoreanQuestion.esteem1, KoreanQuestion.esteemScale());
+        Question esteem2 = new Question("es2", KoreanQuestion.esteem2, KoreanQuestion.esteemScale());
+
+        Question depress1 = new Question("dp1", KoreanQuestion.depress2, KoreanQuestion.depressScale());
+        Question depress2 = new Question("dp2", KoreanQuestion.depress3, KoreanQuestion.depressScale());
+
+        Question body1 = new Question("bd1", KoreanQuestion.body1, KoreanQuestion.bodyScale());
+        Question body2 = new Question("bd2", KoreanQuestion.body2, KoreanQuestion.bodyScale());
+
+        Question valence = new Question("sa1", "", KoreanQuestion.samScale());
+        Question arousal = new Question("sa2", "", KoreanQuestion.samScale());
+
+        Question openQ = new Question("op1","", KoreanQuestion.samScale());
+
         surveyQuestion.put("page1", new Question[] {typeCommmu});
         surveyQuestion.put("page2", new Question[] {socialCompare1, socialCompare2});
-        surveyQuestion.put("page3", new Question[] {envy1, envy2});
+        surveyQuestion.put("page3", new Question[] {envy1, envy2, envy3});
+        surveyQuestion.put("page4", new Question[] {envy4, envy5, envy6});
+        surveyQuestion.put("page5", new Question[] {esteem1, esteem2});
+        surveyQuestion.put("page6", new Question[] {depress1, depress2});
+        surveyQuestion.put("page7", new Question[] {body1, body2});
+        surveyQuestion.put("page8", new Question[] {valence, arousal});
+        surveyQuestion.put("page9", new Question[] {openQ});
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private RadioGroup createRadioButton(Choice[] choices, String questionId) {
         String selectedAnswer = (String) surveyAnswer.get(questionId);
-        int[] choiceWidth = {400,200,200,200,200,200,200,200};
+        int[] choiceWidth = {400,200,200,200,250,250,200,100,100};
 
         final RadioButton[] rb = new RadioButton[choices.length];
         RadioGroup rg = new RadioGroup(this); //create the RadioGroup
         rg.setOrientation(RadioGroup.HORIZONTAL);//or RadioGroup.VERTICAL
         rg.setGravity(Gravity.CENTER_HORIZONTAL);
-        rg.setPadding(0,0,0,50);
+        rg.setPadding(0,10,0,60);
         for (int i = 0; i < choices.length; i++) {
             rb[i] = new RadioButton(this);
             rb[i].setText(choices[i].getChoiceTitle());
@@ -302,8 +355,8 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void saveChoiceToFirebase(String answerString) {
-        String answerKey = answerString.substring(0,2);
-        String answerValue = answerString.substring(2,3);
+        String answerKey = answerString.substring(0,3);
+        String answerValue = answerString.substring(3,4);
 
         String childName1 = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
         String childName2 = "/survey_data/" + surveyKey;
