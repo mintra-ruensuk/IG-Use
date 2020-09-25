@@ -13,13 +13,13 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.example.innerstates.lang.EnglishQuestion;
 import com.example.innerstates.lang.KoreanQuestion;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,7 +29,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -136,14 +135,33 @@ public class SurveyActivity extends AppCompatActivity {
             questionLayOut.addView(textView2);
         }
         for (Question question: questions) {
-            TextView textView = new TextView(this);
-            textView.setPadding(0,10,0,0);
-            textView.setText(question.getQuestionTitle());
-            textView.setTextColor(Color.BLACK);
-            textView.setGravity(Gravity.CENTER);
-            textView.setTypeface(null, Typeface.BOLD);
+            if(page.equals("page8")) {
 
-            questionLayOut.addView(textView);
+                ImageView imageView = new ImageView(this);
+                if(question.getId().equals("sa1")) {
+                    imageView.setImageResource(R.drawable.valence);
+                }else {
+                    imageView.setImageResource(R.drawable.arousal);
+                }
+                LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+//                p.height = 300;
+//                p.setMargins(0,0,0,50);
+                imageView.setAdjustViewBounds(true);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setLayoutParams(p);
+
+                questionLayOut.addView(imageView);
+            }else {
+                TextView textView = new TextView(this);
+                textView.setPadding(0,10,0,0);
+                textView.setText(question.getQuestionTitle());
+                textView.setTextColor(Color.BLACK);
+                textView.setGravity(Gravity.CENTER);
+                textView.setTypeface(null, Typeface.BOLD);
+
+                questionLayOut.addView(textView);
+            }
+
             questionLayOut.addView(createRadioButton(question.getChoices(), question.getId()));
 
         }
@@ -302,7 +320,7 @@ public class SurveyActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private RadioGroup createRadioButton(Choice[] choices, String questionId) {
         String selectedAnswer = (String) surveyAnswer.get(questionId);
-        int[] choiceWidth = {400,200,200,200,250,250,200,100,100};
+        int[] choiceWidth = {400,200,200,200,250,250,200,110,100};
 
         final RadioButton[] rb = new RadioButton[choices.length];
         RadioGroup rg = new RadioGroup(this); //create the RadioGroup
