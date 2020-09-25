@@ -9,17 +9,20 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.example.innerstates.lang.EnglishQuestion;
 import com.example.innerstates.lang.KoreanQuestion;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,7 +32,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,6 +49,8 @@ public class SurveyActivity extends AppCompatActivity {
     private String surveyKey;
     private int radioButtonId = 0;
     private SurveyData surveyData;
+    private EditText openEndedText;
+    private String userOpenEndedText;
 
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -136,15 +140,47 @@ public class SurveyActivity extends AppCompatActivity {
             questionLayOut.addView(textView2);
         }
         for (Question question: questions) {
-            TextView textView = new TextView(this);
-            textView.setPadding(0,10,0,0);
-            textView.setText(question.getQuestionTitle());
-            textView.setTextColor(Color.BLACK);
-            textView.setGravity(Gravity.CENTER);
-            textView.setTypeface(null, Typeface.BOLD);
+            if(page.equals("page8")) {
 
-            questionLayOut.addView(textView);
-            questionLayOut.addView(createRadioButton(question.getChoices(), question.getId()));
+                ImageView imageView = new ImageView(this);
+                if(question.getId().equals("sa1")) {
+                    imageView.setImageResource(R.drawable.valence);
+                }else {
+                    imageView.setImageResource(R.drawable.arousal);
+                }
+                LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                imageView.setAdjustViewBounds(true);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setLayoutParams(p);
+
+                questionLayOut.addView(imageView);
+                questionLayOut.addView(createRadioButton(question.getChoices(), question.getId()));
+            }else if(page.equals("page9")) {
+
+                openEndedText = new EditText(this);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                openEndedText.setLayoutParams(lp);
+                openEndedText.setWidth(500);
+                openEndedText.setSingleLine(false);
+                openEndedText.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                openEndedText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+                openEndedText.setText(userOpenEndedText);
+
+                questionLayOut.addView(openEndedText);
+
+            }else {
+                TextView textView = new TextView(this);
+                textView.setPadding(0,10,0,0);
+                textView.setText(question.getQuestionTitle());
+                textView.setTextColor(Color.BLACK);
+                textView.setGravity(Gravity.CENTER);
+                textView.setTypeface(null, Typeface.BOLD);
+
+                questionLayOut.addView(textView);
+                questionLayOut.addView(createRadioButton(question.getChoices(), question.getId()));
+            }
+
+
 
         }
 
@@ -206,6 +242,9 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void backSurvey() {
+        if(openEndedText != null) {
+            userOpenEndedText = openEndedText.getText().toString();
+        }
         questionLayOut.removeAllViews();
         currentPage -= 1;
         pushFlowToDB(currentPage+"");
@@ -302,7 +341,7 @@ public class SurveyActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private RadioGroup createRadioButton(Choice[] choices, String questionId) {
         String selectedAnswer = (String) surveyAnswer.get(questionId);
-        int[] choiceWidth = {400,200,200,200,250,250,200,100,100};
+        int[] choiceWidth = {400,200,200,200,250,250,200,110,100};
 
         final RadioButton[] rb = new RadioButton[choices.length];
         RadioGroup rg = new RadioGroup(this); //create the RadioGroup
