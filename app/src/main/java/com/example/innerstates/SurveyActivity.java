@@ -171,7 +171,7 @@ public class SurveyActivity extends AppCompatActivity {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
         String childName = "/users/" + userUniqueId + "/survey_data/";
-        String surveyId = UUID.randomUUID().toString();
+        String surveyId = MyUtil.getRandomString(10);
 
 //        surveyKey = mDatabase.child(childName).push().getKey();
         surveyKey = mDatabase.child(childName).child(surveyId).getKey();
