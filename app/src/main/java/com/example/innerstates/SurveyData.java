@@ -19,7 +19,7 @@ public class SurveyData {
 
     }
     public SurveyData(String uid, String surveyId) {
-        this.timeStamp = System.currentTimeMillis() / 1000L;
+        this.timeStamp = MyUtil.getCurrentTime();
         this.uid = uid;
         this.status = INCOMPLETE;
         this.pageFlow = "";

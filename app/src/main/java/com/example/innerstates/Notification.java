@@ -20,7 +20,7 @@ public class Notification {
 
     }
     public Notification(String uid, int notificationId) {
-        this.createdTimeStamp = System.currentTimeMillis() / 1000L;
+        this.createdTimeStamp = MyUtil.getCurrentTime();
         this.status = NOTIFY;
         this.userId = uid;
         this.notificationId = notificationId;

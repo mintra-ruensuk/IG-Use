@@ -25,7 +25,6 @@ import com.rvalerio.fgchecker.AppChecker;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -103,19 +102,19 @@ public class MainActivity extends AppCompatActivity {
                     if (sample.getStatus() == Sample.READY
                             && packageName.equals(igPackageName)) {
                         sample.setStatus(Sample.IG_OPENED);
-                        igOpenTime = System.currentTimeMillis();
+                        igOpenTime = MyUtil.getCurrentTime();
                     }
                     if (sample.getStatus() == Sample.IG_OPENED
                             && !packageName.equals(igPackageName)) {
 
-                        long test = System.currentTimeMillis();
+                        long test = MyUtil.getCurrentTime();
                         // Use IG at least 15 seconds
-                        if(test >= (igOpenTime + 1*1000)) {
+                        if(test >= (igOpenTime + 1)) {
                             sample.setStatus(Sample.POPUP);
 
 
                             notifyHowYouFeel();
-                            notifyTime = System.currentTimeMillis();
+                            notifyTime = MyUtil.getCurrentTime();
 //                            sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
 //                            sleep(2000);
 
@@ -125,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (sample.getStatus() == Sample.POPUP) {
                         // 5 minutes = 300seconds
-                        if(System.currentTimeMillis() >= (notifyTime + 60*1000)) {
+                        if(MyUtil.getCurrentTime() >= (notifyTime + 60)) {
                             cancelNotification(mContext, notificationId);
                             recordCancelNotification(notificationId);
 
@@ -134,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (sample.getStatus() == Sample.WAIT_FOR_NEXT_POPUP) {
                         //wait for 1.5 hours and then set ready state
-                        if(System.currentTimeMillis() >= (startWaitNextNotificationTime + 20*1000)) {
+                        if(MyUtil.getCurrentTime() >= (startWaitNextNotificationTime + 20)) {
                             sample.setStatus(Sample.READY);
                         }
                     }
@@ -293,13 +292,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private int generateFiveDigit() {
-        Random r = new Random( System.currentTimeMillis() );
-        return ((1 + r.nextInt(2)) * 10000 + r.nextInt(10000));
-    }
+
 
     private void notifyHowYouFeel() {
-        notificationId = generateFiveDigit();
+        notificationId = MyUtil.generateFiveDigit();
 
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(this, SurveyActivity.class);

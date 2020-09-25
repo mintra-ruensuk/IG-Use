@@ -22,7 +22,7 @@ public class AppUsage {
     public AppUsage(String uid, String appPackageName, String status, Context context) {
         this.uid = uid;
         this.appPackageName = appPackageName;
-        this.actionTimestamp = System.currentTimeMillis() / 1000L;
+        this.actionTimestamp = MyUtil.getCurrentTime();
         this.status = status;
 
         ConnectivityManager cm =
