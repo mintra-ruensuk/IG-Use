@@ -45,6 +45,7 @@ public class SurveyActivity extends AppCompatActivity {
     private String userUniqueId;
     private String surveyKey;
     private int radioButtonId = 0;
+    private SurveyData surveyData;
 
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -159,13 +160,26 @@ public class SurveyActivity extends AppCompatActivity {
     private void nextSurvey() {
         questionLayOut.removeAllViews();
         currentPage += 1;
+        pushFlowToDB(currentPage+"");
         displaySurvey();
     }
 
     private void backSurvey() {
         questionLayOut.removeAllViews();
         currentPage -= 1;
+        pushFlowToDB(currentPage+"");
         displaySurvey();
+    }
+
+    private void pushFlowToDB(final String currentPage) {
+        final String childName = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
+        final String childName2 = "/survey_data/" + surveyKey;
+
+        surveyData.setPageFlow(surveyData.getPageFlow()+currentPage);
+        
+        mDatabase.child(childName).child("page_flow").setValue(surveyData.getPageFlow());
+        mDatabase.child(childName2).child("page_flow").setValue(surveyData.getPageFlow());
+
     }
     private void pushSurveyDataToDB() {
         // Create new post at /user-posts/$userid/$postid and at
@@ -176,7 +190,7 @@ public class SurveyActivity extends AppCompatActivity {
 //        surveyKey = mDatabase.child(childName).push().getKey();
         surveyKey = mDatabase.child(childName).child(surveyId).getKey();
 //        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, mContext);
-        SurveyData surveyData = new SurveyData(userUniqueId, surveyId);
+        surveyData = new SurveyData(userUniqueId, surveyId);
         Map<String, Object> postValues = surveyData.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
@@ -308,4 +322,6 @@ public class SurveyActivity extends AppCompatActivity {
         mDatabase.child(childName2).child(notificationId+"").child("open_time_stamp").setValue(open_time_stamp);
 
     }
+
+
 }

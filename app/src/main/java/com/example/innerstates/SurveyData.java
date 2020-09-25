@@ -22,7 +22,7 @@ public class SurveyData {
         this.timeStamp = MyUtil.getCurrentTime();
         this.uid = uid;
         this.status = INCOMPLETE;
-        this.pageFlow = "";
+        this.pageFlow = "1";
         this.surveyId = surveyId;
         answer = new HashMap<>();
         answer.put("t1", "0"); // type of communication
@@ -38,7 +38,7 @@ public class SurveyData {
         result.put("user_id", uid);
         result.put("time_stamp", timeStamp);
         result.put("status", status);
-        result.put("page_flow", status);
+        result.put("page_flow", pageFlow);
         result.put("survey_id", surveyId);
         result.put("answer", answer);
 
@@ -47,5 +47,24 @@ public class SurveyData {
 
     public HashMap<String, Object> getAnswer() {
         return answer;
+    }
+
+    public String getPageFlow() {
+        return pageFlow;
+    }
+
+    public void setPageFlow(String pageFlow) {
+        this.pageFlow = pageFlow;
+    }
+
+    @Override
+    public String toString() {
+        return "SurveyData{" +
+                "timeStamp=" + timeStamp +
+                ", uid='" + uid + '\'' +
+                ", status='" + status + '\'' +
+                ", pageFlow='" + pageFlow + '\'' +
+                ", surveyId='" + surveyId + '\'' +
+                '}';
     }
 }
