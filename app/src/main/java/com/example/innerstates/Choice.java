@@ -1,6 +1,6 @@
 package com.example.innerstates;
 
-class Choice {
+public class Choice {
     private String choiceTitle;
     private int choiceValue;
     public Choice(String choiceTitle, int choiceValue) {
