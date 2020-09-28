@@ -211,19 +211,21 @@ public class SurveyActivity extends AppCompatActivity {
             backButton.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    Log.d("tafftaff----", "Back button is pressed.");
                     backSurvey();
                 }
             });
 
+            String nextText = "Next";
+            if(currentPage == 9) {
+                nextText = "Done";
+            }
             Button nextButton = new Button(this);
-            nextButton.setText("Next");
+            nextButton.setText(nextText);
             nextButton.setId(currentPage);
             nextButton.setLayoutParams(p);
             nextButton.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    Log.d("tafftaff----", v.getId()+"");
                     nextSurvey();
                 }
             });
@@ -235,9 +237,13 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void nextSurvey() {
-        questionLayOut.removeAllViews();
         currentPage += 1;
-        pushFlowToDB(currentPage+"");
+        pushFlowToDB();
+        if(currentPage == 9) {
+            pushOpenEndedText();
+        }
+        questionLayOut.removeAllViews();
+        ตอบแบบสอบถามเสร็จแล้วทำไงต่อ คิด
         displaySurvey();
     }
 
@@ -247,15 +253,25 @@ public class SurveyActivity extends AppCompatActivity {
         }
         questionLayOut.removeAllViews();
         currentPage -= 1;
-        pushFlowToDB(currentPage+"");
+        pushFlowToDB();
         displaySurvey();
     }
 
-    private void pushFlowToDB(final String currentPage) {
+    private void pushOpenEndedText() {
         final String childName = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
         final String childName2 = "/survey_data/" + surveyKey;
+        userOpenEndedText = openEndedText.getText().toString();
 
-        surveyData.setPageFlow(surveyData.getPageFlow()+currentPage);
+        mDatabase.child(childName).child("op1").setValue(userOpenEndedText);
+        mDatabase.child(childName2).child("op1").setValue(userOpenEndedText);
+
+    }
+
+    private void pushFlowToDB() {
+        final String childName = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
+        final String childName2 = "/survey_data/" + surveyKey;
+        final String page = currentPage + "";
+        surveyData.setPageFlow(surveyData.getPageFlow()+page);
 
         mDatabase.child(childName).child("page_flow").setValue(surveyData.getPageFlow());
         mDatabase.child(childName2).child("page_flow").setValue(surveyData.getPageFlow());
