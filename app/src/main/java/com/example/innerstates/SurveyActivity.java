@@ -1,14 +1,15 @@
 package com.example.innerstates;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
@@ -67,8 +68,9 @@ public class SurveyActivity extends AppCompatActivity {
         questionLayOut = findViewById(R.id.questionLayout);
 
         // Set up user's unique ID (device id)
-        userUniqueId = Settings.Secure.getString(mContext.getContentResolver(),
-                Settings.Secure.ANDROID_ID);
+//        userUniqueId = Settings.Secure.getString(mContext.getContentResolver(),
+//                Settings.Secure.ANDROID_ID);
+        userUniqueId = MyUtil.getDeviceUniqueID(this);
 
         Log.d("tagtag", "user unique id --> " + userUniqueId.toString());
         createSurvey();
@@ -82,7 +84,7 @@ public class SurveyActivity extends AppCompatActivity {
 //        }
 //
 //        MainActivity.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
-
+        MainActivity.cancelAllNotification(mContext);
         displaySurvey();
 
 
@@ -92,7 +94,7 @@ public class SurveyActivity extends AppCompatActivity {
     private void displaySurvey() {
 
 
-        populateSurveyAnswer();
+//        populateSurveyAnswer();
 
         Log.d("tagtag----", "Displaying survey... " + currentPage);
         String page = "page" + currentPage;
@@ -239,18 +241,19 @@ public class SurveyActivity extends AppCompatActivity {
     private void nextSurvey() {
         currentPage += 1;
         pushFlowToDB();
-        if(currentPage == 9) {
+        if(currentPage == 10) {
             pushOpenEndedText();
+//            questionLayOut.removeAllViews();
+            createThankYouPage();
+        }else if(currentPage <= 9){
+            questionLayOut.removeAllViews();
+            displaySurvey();
         }
-        questionLayOut.removeAllViews();
-        ตอบแบบสอบถามเสร็จแล้วทำไงต่อ คิด
-        displaySurvey();
+
     }
 
     private void backSurvey() {
-        if(openEndedText != null) {
-            userOpenEndedText = openEndedText.getText().toString();
-        }
+        userOpenEndedText = getUserOpenEndedText();
         questionLayOut.removeAllViews();
         currentPage -= 1;
         pushFlowToDB();
@@ -258,12 +261,17 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void pushOpenEndedText() {
-        final String childName = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
+        final String childName = "/users/" + userUniqueId + "/survey_data/" + surveyKey + "/answer/";
         final String childName2 = "/survey_data/" + surveyKey;
-        userOpenEndedText = openEndedText.getText().toString();
 
-        mDatabase.child(childName).child("op1").setValue(userOpenEndedText);
-        mDatabase.child(childName2).child("op1").setValue(userOpenEndedText);
+        userOpenEndedText = getUserOpenEndedText();
+
+
+        mDatabase.child(childName).child("answer").child("op1").setValue(userOpenEndedText);
+        mDatabase.child(childName2).child("answer").child("op1").setValue(userOpenEndedText);
+
+        mDatabase.child(childName).child("status").setValue(SurveyData.DONE);
+        mDatabase.child(childName2).child("status").setValue(SurveyData.DONE);
 
     }
 
@@ -354,6 +362,22 @@ public class SurveyActivity extends AppCompatActivity {
 
     }
 
+    private void createThankYouPage(){
+        AlertDialog alertDialog = new AlertDialog.Builder(SurveyActivity.this).create();
+        alertDialog.setTitle("Thank you!");
+        alertDialog.setMessage("Thank you for your answer.");
+        alertDialog.setCancelable(false);
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        MainActivity.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
+                        finish();
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private RadioGroup createRadioButton(Choice[] choices, String questionId) {
         String selectedAnswer = (String) surveyAnswer.get(questionId);
@@ -440,6 +464,13 @@ public class SurveyActivity extends AppCompatActivity {
         mDatabase.child(childName2).child(notificationId+"").child("status").setValue(Notification.OPENED);
         mDatabase.child(childName2).child(notificationId+"").child("open_time_stamp").setValue(open_time_stamp);
 
+    }
+
+    public String getUserOpenEndedText() {
+        if(openEndedText != null  && openEndedText.getText() != null) {
+            userOpenEndedText = openEndedText.getText().toString();
+        }
+        return userOpenEndedText;
     }
 
 

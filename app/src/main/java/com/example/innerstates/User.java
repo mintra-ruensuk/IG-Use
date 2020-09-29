@@ -1,5 +1,6 @@
 package com.example.innerstates;
 
+import android.app.Activity;
 import android.os.Build;
 
 import com.google.firebase.database.IgnoreExtraProperties;
@@ -18,12 +19,13 @@ public class User {
     public String model;
     public String product;
     public String deviceName;
+    public String IMEI;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String id) {
+    public User(String id, Activity activity) {
         this.id = id;
         this.createdTime = new Date().toString();
         this.osVersion = System.getProperty("os.version"); // OS version
@@ -33,6 +35,7 @@ public class User {
         this.product = android.os.Build.PRODUCT;
         this.deviceName = getDeviceName();
         this.createdUnixTime = System.currentTimeMillis() / 1000L;
+        this.IMEI = MyUtil.getDeviceIMEI(activity);
 
     }
 

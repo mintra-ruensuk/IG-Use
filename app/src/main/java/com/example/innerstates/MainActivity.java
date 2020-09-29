@@ -79,8 +79,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
         // Set up user's unique ID (device id)
-        userUniqueId = Settings.Secure.getString(mContext.getContentResolver(),
-                Settings.Secure.ANDROID_ID);
+//        userUniqueId = Settings.Secure.getString(mContext.getContentResolver(),
+//                Settings.Secure.ANDROID_ID);
+        userUniqueId = MyUtil.getDeviceUniqueID(this);
 
 
 
@@ -179,7 +180,14 @@ public class MainActivity extends AppCompatActivity {
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager nMgr = (NotificationManager) ctx.getSystemService(ns);
         nMgr.cancel(notifyId);
+
+        NotificationManagerCompat.from(ctx).cancelAll();
     }
+    public static void cancelAllNotification(Context ctx) {
+
+        NotificationManagerCompat.from(ctx).cancelAll();
+    }
+
 
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
@@ -323,12 +331,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void writeNewUser() {
-
+        final User user = new User(userUniqueId, this);
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (!snapshot.child("users").hasChild(userUniqueId)) {
-                    User user = new User(userUniqueId);
+
                     mDatabase.child("users").child(userUniqueId).setValue(user);
                 }
             }
@@ -380,4 +388,6 @@ public class MainActivity extends AppCompatActivity {
         mDatabase.child(childName2).child(notificationId+"").child("status").setValue(Notification.MISSED);
 
     }
+
+
 }

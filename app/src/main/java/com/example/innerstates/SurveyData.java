@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SurveyData {
-    private final String INCOMPLETE = "incomplete";
-    private final String DONE = "done";
+    public static final String INCOMPLETE = "incomplete";
+    public static final String DONE = "done";
     private long timeStamp;
     private String uid;
     private String status;
