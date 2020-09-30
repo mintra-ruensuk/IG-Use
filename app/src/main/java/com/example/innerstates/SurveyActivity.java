@@ -50,8 +50,8 @@ public class SurveyActivity extends AppCompatActivity {
     private String surveyKey;
     private int radioButtonId = 0;
     private SurveyData surveyData;
-    private EditText openEndedText;
-    private String userOpenEndedText;
+    private EditText[] openEndedText = new EditText[2];
+    private String[] userOpenEndedText = new String[2];
 
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -141,6 +141,7 @@ public class SurveyActivity extends AppCompatActivity {
 
             questionLayOut.addView(textView2);
         }
+        int index = 0;
         for (Question question: questions) {
             if(page.equals("page8")) {
 
@@ -159,16 +160,26 @@ public class SurveyActivity extends AppCompatActivity {
                 questionLayOut.addView(createRadioButton(question.getChoices(), question.getId()));
             }else if(page.equals("page9")) {
 
-                openEndedText = new EditText(this);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-                openEndedText.setLayoutParams(lp);
-                openEndedText.setWidth(500);
-                openEndedText.setSingleLine(false);
-                openEndedText.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                openEndedText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-                openEndedText.setText(userOpenEndedText);
+                TextView textView = new TextView(this);
+                textView.setPadding(0,10,0,50);
+                textView.setText(question.getQuestionTitle());
+                textView.setTextColor(Color.BLACK);
+                textView.setGravity(Gravity.CENTER);
+                textView.setTypeface(null, Typeface.BOLD);
 
-                questionLayOut.addView(openEndedText);
+                questionLayOut.addView(textView);
+
+                openEndedText[index] = new EditText(this);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                openEndedText[index].setLayoutParams(lp);
+                openEndedText[index].setWidth(500);
+                openEndedText[index].setSingleLine(false);
+                openEndedText[index].setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                openEndedText[index].setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+                openEndedText[index].setText(userOpenEndedText[index]);
+
+                questionLayOut.addView(openEndedText[index]);
+                index += 1;
 
             }else {
                 TextView textView = new TextView(this);
@@ -267,8 +278,10 @@ public class SurveyActivity extends AppCompatActivity {
         userOpenEndedText = getUserOpenEndedText();
 
 
-        mDatabase.child(childName).child("answer").child("op1").setValue(userOpenEndedText);
-        mDatabase.child(childName2).child("answer").child("op1").setValue(userOpenEndedText);
+        mDatabase.child(childName).child("answer").child("op1").setValue(userOpenEndedText[0]);
+        mDatabase.child(childName2).child("answer").child("op1").setValue(userOpenEndedText[0]);
+        mDatabase.child(childName).child("answer").child("op2").setValue(userOpenEndedText[1]);
+        mDatabase.child(childName2).child("answer").child("op2").setValue(userOpenEndedText[1]);
 
         mDatabase.child(childName).child("status").setValue(SurveyData.DONE);
         mDatabase.child(childName2).child("status").setValue(SurveyData.DONE);
@@ -348,7 +361,8 @@ public class SurveyActivity extends AppCompatActivity {
         Question valence = new Question("sa1", "", KoreanQuestion.samScale());
         Question arousal = new Question("sa2", "", KoreanQuestion.samScale());
 
-        Question openQ = new Question("op1","", KoreanQuestion.samScale());
+        Question openQ1 = new Question("op1", KoreanQuestion.openQ1, KoreanQuestion.samScale());
+        Question openQ2 = new Question("op2", KoreanQuestion.openQ2, KoreanQuestion.samScale());
 
         surveyQuestion.put("page1", new Question[] {typeCommmu});
         surveyQuestion.put("page2", new Question[] {socialCompare1, socialCompare2});
@@ -358,7 +372,7 @@ public class SurveyActivity extends AppCompatActivity {
         surveyQuestion.put("page6", new Question[] {depress1, depress2});
         surveyQuestion.put("page7", new Question[] {body1, body2});
         surveyQuestion.put("page8", new Question[] {valence, arousal});
-        surveyQuestion.put("page9", new Question[] {openQ});
+        surveyQuestion.put("page9", new Question[] {openQ1, openQ2});
 
     }
 
@@ -466,10 +480,13 @@ public class SurveyActivity extends AppCompatActivity {
 
     }
 
-    public String getUserOpenEndedText() {
-        if(openEndedText != null  && openEndedText.getText() != null) {
-            userOpenEndedText = openEndedText.getText().toString();
+    public String[] getUserOpenEndedText() {
+        for (int i = 0 ; i < openEndedText.length ; i++) {
+            if(openEndedText[i] != null  && openEndedText[i].getText() != null) {
+                userOpenEndedText[i] = openEndedText[i].getText().toString();
+            }
         }
+
         return userOpenEndedText;
     }
 
