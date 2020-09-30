@@ -122,24 +122,6 @@ public class SurveyActivity extends AppCompatActivity {
             textView.setTypeface(null, Typeface.BOLD);
 
             questionLayOut.addView(textView);
-        }else if(page.equals("page9")) {
-            TextView textView = new TextView(this);
-            textView.setPadding(0,10,0,50);
-            textView.setText(KoreanQuestion.openQ1);
-            textView.setTextColor(Color.BLACK);
-            textView.setGravity(Gravity.CENTER);
-            textView.setTypeface(null, Typeface.BOLD);
-
-            questionLayOut.addView(textView);
-
-            TextView textView2 = new TextView(this);
-            textView2.setPadding(0,10,0,50);
-            textView2.setText(KoreanQuestion.openQ2);
-            textView2.setTextColor(Color.BLACK);
-            textView2.setGravity(Gravity.CENTER);
-            textView2.setTypeface(null, Typeface.BOLD);
-
-            questionLayOut.addView(textView2);
         }
         int index = 0;
         for (Question question: questions) {
@@ -250,15 +232,19 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void nextSurvey() {
-        currentPage += 1;
-        pushFlowToDB();
-        if(currentPage == 10) {
-            pushOpenEndedText();
+        if(validateAnswer()) {
+            currentPage += 1;
+            pushFlowToDB();
+            if(currentPage == 10) {
+                pushOpenEndedText();
 //            questionLayOut.removeAllViews();
-            createThankYouPage();
-        }else if(currentPage <= 9){
-            questionLayOut.removeAllViews();
-            displaySurvey();
+                createThankYouPage();
+            }else if(currentPage <= 9){
+                questionLayOut.removeAllViews();
+                displaySurvey();
+            }
+        }else {
+           // Display alert
         }
 
     }
@@ -269,6 +255,10 @@ public class SurveyActivity extends AppCompatActivity {
         currentPage -= 1;
         pushFlowToDB();
         displaySurvey();
+    }
+
+    private boolean validateAnswer() {
+        
     }
 
     private void pushOpenEndedText() {
