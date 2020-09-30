@@ -31,7 +31,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.RequiresApi;
@@ -52,6 +54,7 @@ public class SurveyActivity extends AppCompatActivity {
     private SurveyData surveyData;
     private EditText[] openEndedText = new EditText[2];
     private String[] userOpenEndedText = new String[2];
+    private List<RadioGroup> radioGroups = new ArrayList<>();
 
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -159,6 +162,7 @@ public class SurveyActivity extends AppCompatActivity {
                 openEndedText[index].setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                 openEndedText[index].setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
                 openEndedText[index].setText(userOpenEndedText[index]);
+//                openEndedText[index].setHint("Write at least 20 characters");
 
                 questionLayOut.addView(openEndedText[index]);
                 index += 1;
@@ -243,13 +247,26 @@ public class SurveyActivity extends AppCompatActivity {
                 questionLayOut.removeAllViews();
                 displaySurvey();
             }
-        }else {
-           // Display alert
+        }else if(currentPage < 9){
+            // Display alert
+            AlertDialog alertDialog = new AlertDialog.Builder(SurveyActivity.this).create();
+            alertDialog.setTitle("Warning!");
+            alertDialog.setMessage("You must select all answers.");
+            alertDialog.setCancelable(false);
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
         }
 
     }
 
     private void backSurvey() {
+        radioGroups.clear();
         userOpenEndedText = getUserOpenEndedText();
         questionLayOut.removeAllViews();
         currentPage -= 1;
@@ -258,7 +275,22 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private boolean validateAnswer() {
-        
+        if(currentPage == 9) {
+            for (int i = 0 ; i < openEndedText.length ; i ++) {
+                if( openEndedText[i].getText().toString().length() <= 20 ) {
+                    openEndedText[i].setError("You must write at least 20 characters.");
+                    return false;
+                }
+            }
+        }else {
+            for(RadioGroup rg: radioGroups) {
+                if (rg.getCheckedRadioButtonId() == -1){
+                    return false;
+                }
+            }
+            radioGroups.clear();
+        }
+        return true;
     }
 
     private void pushOpenEndedText() {
@@ -372,7 +404,7 @@ public class SurveyActivity extends AppCompatActivity {
         alertDialog.setMessage("Thank you for your answer.");
         alertDialog.setCancelable(false);
         alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         MainActivity.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
@@ -429,6 +461,7 @@ public class SurveyActivity extends AppCompatActivity {
                 saveChoiceToFirebase(radioButton.getTag().toString());
             }
         });
+        radioGroups.add(rg);
         return rg;
 
     }
