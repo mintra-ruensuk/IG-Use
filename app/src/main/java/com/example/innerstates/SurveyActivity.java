@@ -364,6 +364,9 @@ public class SurveyActivity extends AppCompatActivity {
         Question socialCompare1 = new Question("so1", KoreanQuestion.social1, KoreanQuestion.disToAgree());
         Question socialCompare2 = new Question("so2", KoreanQuestion.social2, KoreanQuestion.disToAgree());
 
+        Question body1 = new Question("bd1", KoreanQuestion.body1, KoreanQuestion.bodyScale());
+        Question body2 = new Question("bd2", KoreanQuestion.body2, KoreanQuestion.bodyScale());
+
         Question envy1 = new Question("ev1", KoreanQuestion.envy1, KoreanQuestion.disToAgree());
         Question envy2 = new Question("ev2", KoreanQuestion.envy2, KoreanQuestion.disToAgree());
         Question envy3 = new Question("ev3", KoreanQuestion.envy3, KoreanQuestion.disToAgree());
@@ -374,11 +377,12 @@ public class SurveyActivity extends AppCompatActivity {
         Question esteem1 = new Question("es1", KoreanQuestion.esteem1, KoreanQuestion.esteemScale());
         Question esteem2 = new Question("es2", KoreanQuestion.esteem2, KoreanQuestion.esteemScale());
 
+
+
         Question depress1 = new Question("dp1", KoreanQuestion.depress2, KoreanQuestion.depressScale());
         Question depress2 = new Question("dp2", KoreanQuestion.depress3, KoreanQuestion.depressScale());
 
-        Question body1 = new Question("bd1", KoreanQuestion.body1, KoreanQuestion.bodyScale());
-        Question body2 = new Question("bd2", KoreanQuestion.body2, KoreanQuestion.bodyScale());
+
 
         Question valence = new Question("sa1", "", KoreanQuestion.samScale());
         Question arousal = new Question("sa2", "", KoreanQuestion.samScale());
@@ -388,11 +392,12 @@ public class SurveyActivity extends AppCompatActivity {
 
         surveyQuestion.put("page1", new Question[] {typeCommmu});
         surveyQuestion.put("page2", new Question[] {socialCompare1, socialCompare2});
-        surveyQuestion.put("page3", new Question[] {envy1, envy2, envy3});
-        surveyQuestion.put("page4", new Question[] {envy4, envy5, envy6});
-        surveyQuestion.put("page5", new Question[] {esteem1, esteem2});
-        surveyQuestion.put("page6", new Question[] {depress1, depress2});
-        surveyQuestion.put("page7", new Question[] {body1, body2});
+        surveyQuestion.put("page3", new Question[] {body1, body2});
+        surveyQuestion.put("page4", new Question[] {envy1, envy2, envy3});
+        surveyQuestion.put("page5", new Question[] {envy4, envy5, envy6});
+        surveyQuestion.put("page6", new Question[] {esteem1, esteem2});
+        surveyQuestion.put("page7", new Question[] {depress1, depress2});
+
         surveyQuestion.put("page8", new Question[] {valence, arousal});
         surveyQuestion.put("page9", new Question[] {openQ1, openQ2});
 
