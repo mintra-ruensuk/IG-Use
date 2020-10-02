@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
 
         mContext = this.getBaseContext();
 
+        startService(new Intent(getBaseContext(), AppStopped.class));
+
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
