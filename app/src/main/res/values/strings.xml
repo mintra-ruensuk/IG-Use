@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Inner States</string>
+    <string name="app_name">Instagram Use</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -14,5 +14,7 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="main_app">This app will prompt you to record your Instagram use throughout the day.\n\nPlease keep this app running. If it is running, you will see a notice in your notification drawer.</string>
+    <string name="contact_us">Contact\nmintra@unist.ac.kr</string>
 
 </resources>

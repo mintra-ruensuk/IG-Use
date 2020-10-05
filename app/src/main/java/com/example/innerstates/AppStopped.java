@@ -30,7 +30,7 @@ public class AppStopped extends Service {
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         Log.e("Service.inner", "END");
-        Toast toast = Toast.makeText(getApplicationContext(), "You have just closed XXXXXX app. Please open the app again.", Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getApplicationContext(), "You have just closed IG Usage app. Please open the app again.", Toast.LENGTH_LONG);
 //        toast.getView().setBackgroundColor(Color.RED);
         toast.show();
         stopSelf();

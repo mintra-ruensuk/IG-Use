@@ -422,7 +422,7 @@ public class SurveyActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private RadioGroup createRadioButton(Choice[] choices, String questionId) {
         String selectedAnswer = (String) surveyAnswer.get(questionId);
-        int[] choiceWidth = {400,200,200,200,250,250,200,110,100};
+        int[] choiceWidth = {400,200,200,200,200,250,250,110,100};
 
         final RadioButton[] rb = new RadioButton[choices.length];
         RadioGroup rg = new RadioGroup(this); //create the RadioGroup
