@@ -41,8 +41,7 @@ public class KoreanQuestion {
     public static String esteem3 = "내게는 자랑으로 여길만한 것이 별로 없다";
 
     // From the last time we ask, how often have you been bothered by the following problems?
-    public static String depress1 = "이전 설문 응답 후 지금까지, 당신은 다음과 같은 일로 얼마나 자주 불편\n" +
-            "함을 느낀 적이 있습니까?";
+    public static String depress1 = "이전 설문 응답 후 지금까지, 당신은 다음과 같은 일로 얼마나 자주 불편함을 느낀 적이 있습니까?";
 
     // Little interest or pleasure in doing things
     public static String depress2 = "일을 함에 있어 거의 흥미가 없거나 즐거움이 없다";
