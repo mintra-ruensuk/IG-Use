@@ -9,11 +9,16 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     private long notifyTime = 0;
     private int notificationId;
     public static long startWaitNextNotificationTime = 0;
+    private SharedPreferences sharedPref;
+    private String inviteUserId;
+    public static User user;
 
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -66,6 +74,11 @@ public class MainActivity extends AppCompatActivity {
         ourAppUsage = new Sample();
 
         mContext = this.getBaseContext();
+        sharedPref = mContext.getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+
+
+        checkInviteCode();
 
         startService(new Intent(getBaseContext(), AppStopped.class));
 
@@ -82,8 +95,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         userUniqueId = MyUtil.getDeviceUniqueID(this);
-
-
 
 
 
@@ -344,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void writeNewUser() {
-        final User user = new User(userUniqueId, this);
+        user = new User(userUniqueId, inviteUserId, this);
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -365,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
 
         String childName = "/users/" + userUniqueId + "/ig_usage/";
         String key = mDatabase.child(childName).push().getKey();
-        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, mContext);
+        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, getInviteUserId(), mContext);
         Map<String, Object> postValues = appUsage.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
@@ -378,7 +389,7 @@ public class MainActivity extends AppCompatActivity {
 
         String childName = "/users/" + userUniqueId + "/inner_usage/";
         String key = mDatabase.child(childName).push().getKey();
-        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, mContext);
+        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, getInviteUserId(), mContext);
         Map<String, Object> postValues = appUsage.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
@@ -392,7 +403,7 @@ public class MainActivity extends AppCompatActivity {
 
         String childName = "/users/" + userUniqueId + "/notification/";
         String key = mDatabase.child(childName).child(notificationId + "").getKey();
-        Notification appUsage = new Notification(userUniqueId, notificationId);
+        Notification appUsage = new Notification(userUniqueId, notificationId, getInviteUserId());
         Map<String, Object> postValues = appUsage.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
@@ -414,6 +425,56 @@ public class MainActivity extends AppCompatActivity {
         mDatabase.child(childName2).child(notificationId+"").child("status").setValue(Notification.MISSED);
 
     }
+    private void checkInviteCode() {
+        final EditText editText = findViewById(R.id.editTextInviteCode);
+        final Button button = findViewById(R.id.submitInviteCode);
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.invitation_user_id), null);
+        editor.apply();
+
+        inviteUserId = getInviteUserId();
+//        Log.e("idididididi--->", inviteUserId);
+
+        if (!inviteUserId.equals("nodata")) {
+            editText.setVisibility(View.GONE);
+            button.setVisibility(View.GONE);
+            user.setInviteUserId(inviteUserId);
+            user.setId(userUniqueId);
+        }
+
+        if(button.getVisibility() == View.VISIBLE) {
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (editText.getText().length() == 6) {
+                        String code = editText.getText().toString();
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putString(getString(R.string.invitation_user_id), code);
+                        editor.apply();
+
+                        editText.setVisibility(View.GONE);
+                        button.setVisibility(View.GONE);
+                        user.setInviteUserId(code);
 
 
+                        String childName = "/users/" + userUniqueId;
+                        mDatabase.child(childName).child("inviteUserId").setValue(code);
+
+
+                        Toast.makeText(getApplicationContext(),"Thank you for registration!",Toast.LENGTH_LONG).show();
+
+
+                    }else {
+                        editText.setError("Code must be 6 digits.");
+                    }
+                }
+            });
+
+        }
+    }
+
+    public String getInviteUserId() {
+        return sharedPref.getString(getString(R.string.invitation_user_id), "nodata");
+    }
 }

@@ -4,17 +4,16 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -59,6 +58,7 @@ public class SurveyActivity extends AppCompatActivity {
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference mDatabase = database.getReference();
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +70,9 @@ public class SurveyActivity extends AppCompatActivity {
         mContext = this.getBaseContext();
         questionLayOut = findViewById(R.id.questionLayout);
 
-        // Set up user's unique ID (device id)
-//        userUniqueId = Settings.Secure.getString(mContext.getContentResolver(),
-//                Settings.Secure.ANDROID_ID);
+
+        sharedPref = mContext.getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         userUniqueId = MyUtil.getDeviceUniqueID(this);
 
         Log.d("tagtag", "user unique id --> " + userUniqueId.toString());
@@ -328,7 +328,7 @@ public class SurveyActivity extends AppCompatActivity {
 //        surveyKey = mDatabase.child(childName).push().getKey();
         surveyKey = mDatabase.child(childName).child(surveyId).getKey();
 //        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, mContext);
-        surveyData = new SurveyData(userUniqueId, surveyId);
+        surveyData = new SurveyData(userUniqueId, surveyId, getInviteUserId());
         Map<String, Object> postValues = surveyData.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
@@ -517,6 +517,10 @@ public class SurveyActivity extends AppCompatActivity {
         }
 
         return userOpenEndedText;
+    }
+
+    public String getInviteUserId() {
+        return sharedPref.getString(getString(R.string.invitation_user_id), "nodata");
     }
 
 

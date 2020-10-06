@@ -15,15 +15,17 @@ public class AppUsage {
     public long actionTimestamp;
     public String status;
     public boolean isWiFiConnected;
+    public String inviteUserId;
 
     public AppUsage() {
 
     }
-    public AppUsage(String uid, String appPackageName, String status, Context context) {
+    public AppUsage(String uid, String appPackageName, String status, String inviteUserId, Context context) {
         this.uid = uid;
         this.appPackageName = appPackageName;
         this.actionTimestamp = MyUtil.getCurrentTime();
         this.status = status;
+        this.inviteUserId = inviteUserId;
 
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -41,6 +43,7 @@ public class AppUsage {
         result.put("time_stamp", actionTimestamp);
         result.put("status", status);
         result.put("is_wifi_connected", isWiFiConnected);
+        result.put("invite_user_id", inviteUserId);
 
         return result;
     }

@@ -1,6 +1,7 @@
 package com.example.innerstates;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.provider.Settings;
 
 import java.util.Random;
@@ -38,6 +39,7 @@ public class MyUtil {
                 Settings.Secure.ANDROID_ID);
         return device_unique_id;
     }
+
 
     /**
      * Returns the unique identifier for the device

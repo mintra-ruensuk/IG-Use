@@ -20,12 +20,13 @@ public class User {
     public String product;
     public String deviceName;
     public String IMEI;
+    public String inviteUserId;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String id, Activity activity) {
+    public User(String id, String inviteUserId, Activity activity) {
         this.id = id;
         this.createdTime = new Date().toString();
         this.osVersion = System.getProperty("os.version"); // OS version
@@ -36,6 +37,7 @@ public class User {
         this.deviceName = getDeviceName();
         this.createdUnixTime = System.currentTimeMillis() / 1000L;
         this.IMEI = MyUtil.getDeviceIMEI(activity);
+        this.inviteUserId = inviteUserId;
 
     }
 
@@ -62,4 +64,19 @@ public class User {
         }
     }
 
+    public void setInviteUserId(String inviteUserId) {
+        this.inviteUserId = inviteUserId;
+    }
+
+    public String getInviteUserId() {
+        return inviteUserId;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
 }

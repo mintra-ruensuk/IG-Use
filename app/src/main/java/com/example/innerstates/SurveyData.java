@@ -13,17 +13,19 @@ public class SurveyData {
     private String status;
     private String pageFlow;
     private String surveyId;
+    private String inviteUserId;
     private HashMap<String, Object> answer ;
 
     public SurveyData() {
 
     }
-    public SurveyData(String uid, String surveyId) {
+    public SurveyData(String uid, String surveyId, String inviteUserId) {
         this.timeStamp = MyUtil.getCurrentTime();
         this.uid = uid;
         this.status = INCOMPLETE;
         this.pageFlow = "1";
         this.surveyId = surveyId;
+        this.inviteUserId = inviteUserId;
         answer = new HashMap<>();
         answer.put("ty1", "0"); // type of communication
         answer.put("so1", "0"); // social comparison 1
@@ -56,6 +58,7 @@ public class SurveyData {
         result.put("status", status);
         result.put("page_flow", pageFlow);
         result.put("survey_id", surveyId);
+        result.put("invite_user_id", inviteUserId);
         result.put("answer", answer);
 
         return result;
@@ -81,6 +84,7 @@ public class SurveyData {
                 ", status='" + status + '\'' +
                 ", pageFlow='" + pageFlow + '\'' +
                 ", surveyId='" + surveyId + '\'' +
+                ", inviteUserId='" + inviteUserId + '\'' +
                 '}';
     }
 }

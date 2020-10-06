@@ -15,16 +15,18 @@ public class Notification {
     private String status;
     private String userId;
     private int notificationId;
+    private String inviteUserId;
 
     public Notification() {
 
     }
-    public Notification(String uid, int notificationId) {
+    public Notification(String uid, int notificationId, String inviteUserId) {
         this.createdTimeStamp = MyUtil.getCurrentTime();
         this.status = NOTIFY;
         this.userId = uid;
         this.notificationId = notificationId;
         this.openedTimeStamp = 0;
+        this.inviteUserId = inviteUserId;
     }
     @Exclude
     public Map<String, Object> toMap() {
@@ -34,6 +36,7 @@ public class Notification {
         result.put("create_time_stamp", createdTimeStamp);
         result.put("status", status);
         result.put("open_time_stamp", openedTimeStamp);
+        result.put("invite_user_id", inviteUserId);
         return result;
     }
 }
