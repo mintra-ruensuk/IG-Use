@@ -1,7 +1,6 @@
 package com.example.innerstates;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.provider.Settings;
 
 import java.util.Random;
@@ -40,25 +39,6 @@ public class MyUtil {
         return device_unique_id;
     }
 
-
-    /**
-     * Returns the unique identifier for the device
-     *
-     * @return unique identifier for the device
-     */
-    public static String getDeviceIMEI(Activity activity) {
-//        //FIXXXXXX ERRORRRR HEREEEEEE
-//        String deviceUniqueIdentifier = null;
-//        TelephonyManager tm = (TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE);
-//        if (null != tm) {
-//            deviceUniqueIdentifier = tm.getDeviceId();
-//        }
-//        if (null == deviceUniqueIdentifier || 0 == deviceUniqueIdentifier.length()) {
-//            deviceUniqueIdentifier = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-//        }
-//        return deviceUniqueIdentifier;
-        return "FIX ME";
-    }
 
 
 }

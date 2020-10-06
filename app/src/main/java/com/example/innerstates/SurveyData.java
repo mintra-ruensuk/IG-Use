@@ -44,8 +44,8 @@ public class SurveyData {
         answer.put("bd2", "0"); // body comparison 2
         answer.put("sa1", "0"); // valence
         answer.put("sa2", "0"); // arousal
-        answer.put("op1", "0"); // open-ended question 1
-        answer.put("op2", "0"); // open-ended question 2
+//        answer.put("op1", "0"); // open-ended question 1
+//        answer.put("op2", "0"); // open-ended question 2
 
 
     }

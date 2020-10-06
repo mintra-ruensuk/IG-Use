@@ -79,14 +79,9 @@ public class SurveyActivity extends AppCompatActivity {
         createSurvey();
         pushSurveyDataToDB();
 
-//        int notificationId = getIntent().getExtras().getInt("notificationId");
-//        if(notificationId > 0) {
-//            cancelNotification(mContext, notificationId);
-//            changeNotificationStatus(notificationId);
-//            Log.d("tagtag", "Yeah --> " + userUniqueId.toString());
-//        }
-//
-//        MainActivity.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
+
+        MainActivity.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
+        changeNotiToOpenedStatus(MainActivity.notificationId);
         MainActivity.cancelAllNotification(mContext);
         displaySurvey();
 
@@ -404,6 +399,7 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void createThankYouPage(){
+        changeSurveyStatusToDone();
         AlertDialog alertDialog = new AlertDialog.Builder(SurveyActivity.this).create();
         alertDialog.setTitle("Thank you!");
         alertDialog.setMessage("Thank you for your answer.");
@@ -494,7 +490,7 @@ public class SurveyActivity extends AppCompatActivity {
         nMgr.cancel(notificationId);
     }
 
-    public void changeNotificationStatus(int notificationId) {
+    public void changeNotiToOpenedStatus(int notificationId) {
 
         long open_time_stamp = System.currentTimeMillis() / 1000L;
 
@@ -521,6 +517,14 @@ public class SurveyActivity extends AppCompatActivity {
 
     public String getInviteUserId() {
         return sharedPref.getString(getString(R.string.invitation_user_id), "nodata");
+    }
+
+    public void changeSurveyStatusToDone() {
+
+        String childName1 = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
+        String childName2 = "/survey_data/" + surveyKey;
+        mDatabase.child(childName1).child("status").setValue(SurveyData.DONE);
+        mDatabase.child(childName2).child("status").setValue(SurveyData.DONE);
     }
 
 

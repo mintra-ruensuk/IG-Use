@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     final AppChecker appChecker = new AppChecker();
     private long igOpenTime = 0;
     private long notifyTime = 0;
-    private int notificationId;
+    public static int notificationId;
     public static long startWaitNextNotificationTime = 0;
     private SharedPreferences sharedPref;
     private String inviteUserId;
@@ -208,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
         NotificationManagerCompat.from(ctx).cancelAll();
     }
     public static void cancelAllNotification(Context ctx) {
+
 
         NotificationManagerCompat.from(ctx).cancelAll();
     }

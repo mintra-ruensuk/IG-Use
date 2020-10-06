@@ -19,7 +19,6 @@ public class User {
     public String model;
     public String product;
     public String deviceName;
-    public String IMEI;
     public String inviteUserId;
 
     public User() {
@@ -36,7 +35,6 @@ public class User {
         this.product = android.os.Build.PRODUCT;
         this.deviceName = getDeviceName();
         this.createdUnixTime = System.currentTimeMillis() / 1000L;
-        this.IMEI = MyUtil.getDeviceIMEI(activity);
         this.inviteUserId = inviteUserId;
 
     }
