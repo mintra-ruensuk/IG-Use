@@ -36,11 +36,13 @@ public class MainActivity extends AppCompatActivity {
     final static String CHANNEL_ID = "123456";
     private Context mContext;
     private String igPackageName = "com.instagram.android";
+    private String appPackageName = "com.example.innerstates";
 
     private String userUniqueId;
     private String lastForegroundApp = "";
     public static Sample sample;
     private Sample igUsage;
+    private Sample ourAppUsage;
     final AppChecker appChecker = new AppChecker();
     private long igOpenTime = 0;
     private long notifyTime = 0;
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         sample = new Sample();
         igUsage = new Sample();
+        ourAppUsage = new Sample();
 
         mContext = this.getBaseContext();
 
@@ -95,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 if (packageName != null) {
                     Log.d("tagtag-------------->", sample.getReadableStatus());
                     recordIgUsage(packageName);
+                    recordOurAppUsage(packageName);
 
                     // IF 1.5 hours has passed... then do this:
                     if (sample.getStatus() == Sample.READY
@@ -162,13 +166,25 @@ public class MainActivity extends AppCompatActivity {
     private void recordIgUsage(String packageName) {
         if (igUsage.getStatus() == Sample.READY
                 && packageName.equals(igPackageName)) {
-            writeNewAppUsage(packageName, "IG_OPENED",mContext);
+            writeNewIgUsage(packageName, "IG_OPENED",mContext);
             igUsage.setStatus(Sample.IG_OPENED);
         }
         if (igUsage.getStatus() == Sample.IG_OPENED
                 && !packageName.equals(igPackageName)) {
-            writeNewAppUsage(packageName, "IG_CLOSED",mContext);
+            writeNewIgUsage(packageName, "IG_CLOSED",mContext);
             igUsage.setStatus(Sample.READY);
+        }
+    }
+    private void recordOurAppUsage(String packageName) {
+        if (ourAppUsage.getStatus() == Sample.READY
+                && packageName.equals(appPackageName)) {
+            writeOurAppUsage(packageName, "INNER_OPENED",mContext);
+            ourAppUsage.setStatus(Sample.IG_OPENED);
+        }
+        if (ourAppUsage.getStatus() == Sample.IG_OPENED
+                && !packageName.equals(appPackageName)) {
+            writeOurAppUsage(packageName, "INNER_CLOSED",mContext);
+            ourAppUsage.setStatus(Sample.READY);
         }
     }
 
@@ -345,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-    private void writeNewAppUsage(String appPackageName, String status, Context context) {
+    private void writeNewIgUsage(String appPackageName, String status, Context context) {
 
         String childName = "/users/" + userUniqueId + "/ig_usage/";
         String key = mDatabase.child(childName).push().getKey();
@@ -355,6 +371,19 @@ public class MainActivity extends AppCompatActivity {
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put(childName + key, postValues);
         childUpdates.put("/ig_usage/" + key, postValues);
+
+        mDatabase.updateChildren(childUpdates);
+    }
+    private void writeOurAppUsage(String appPackageName, String status, Context context) {
+
+        String childName = "/users/" + userUniqueId + "/inner_usage/";
+        String key = mDatabase.child(childName).push().getKey();
+        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, mContext);
+        Map<String, Object> postValues = appUsage.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put(childName + key, postValues);
+        childUpdates.put("/inner_usage/" + key, postValues);
 
         mDatabase.updateChildren(childUpdates);
     }
