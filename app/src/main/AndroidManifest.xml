@@ -29,6 +29,7 @@
         <service
             android:name=".AppStopped"
             android:stopWithTask="false" />
+        <service android:name=".ScreenOnOffService" />
     </application>
     <uses-permission
         android:name="android.permission.AUTHENTICATE_ACCOUNTS"

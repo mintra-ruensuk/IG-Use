@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     public static long startWaitNextNotificationTime = 0;
     private SharedPreferences sharedPref;
     private String inviteUserId;
-    public static User user;
+//    public static User user;
 
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         checkInviteCode();
 
         startService(new Intent(getBaseContext(), AppStopped.class));
+        startService(new Intent(getBaseContext(), ScreenOnOffService.class));
 
 
 //        BottomNavigationView navView = findViewById(R.id.nav_view);
@@ -158,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-        }).timeout(1000).start(this);
+        }).timeout(3000).start(this);
 
         createNotificationChannel();
 
@@ -356,13 +357,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void writeNewUser() {
-        user = new User(userUniqueId, inviteUserId, this);
+        final User user = new User(userUniqueId, inviteUserId, this);
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (!snapshot.child("users").hasChild(userUniqueId)) {
 
                     mDatabase.child("users").child(userUniqueId).setValue(user);
+
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString(getString(R.string.user_unique_id), userUniqueId);
+                    editor.apply();
                 }
             }
 
@@ -430,9 +435,9 @@ public class MainActivity extends AppCompatActivity {
         final EditText editText = findViewById(R.id.editTextInviteCode);
         final Button button = findViewById(R.id.submitInviteCode);
 
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(getString(R.string.invitation_user_id), null);
-        editor.apply();
+//        SharedPreferences.Editor editor = sharedPref.edit();
+//        editor.putString(getString(R.string.invitation_user_id), null);
+//        editor.apply();
 
         inviteUserId = getInviteUserId();
 //        Log.e("idididididi--->", inviteUserId);
@@ -440,8 +445,6 @@ public class MainActivity extends AppCompatActivity {
         if (!inviteUserId.equals("nodata")) {
             editText.setVisibility(View.GONE);
             button.setVisibility(View.GONE);
-            user.setInviteUserId(inviteUserId);
-            user.setId(userUniqueId);
         }
 
         if(button.getVisibility() == View.VISIBLE) {
@@ -456,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
 
                         editText.setVisibility(View.GONE);
                         button.setVisibility(View.GONE);
-                        user.setInviteUserId(code);
+
 
 
                         String childName = "/users/" + userUniqueId;
@@ -478,4 +481,6 @@ public class MainActivity extends AppCompatActivity {
     public String getInviteUserId() {
         return sharedPref.getString(getString(R.string.invitation_user_id), "nodata");
     }
+
+
 }
