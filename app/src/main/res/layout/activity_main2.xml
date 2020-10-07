@@ -33,6 +33,7 @@
         android:inputType="text"
         android:maxLength="6"
         android:imeOptions="flagNoEnterAction"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.263"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -99,6 +100,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:text="Submit"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/editTextInviteCode"
         app:layout_constraintStart_toEndOf="@+id/editTextInviteCode"
         app:layout_constraintTop_toTopOf="@+id/editTextInviteCode" />

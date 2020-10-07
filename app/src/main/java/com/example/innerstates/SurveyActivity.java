@@ -521,10 +521,14 @@ public class SurveyActivity extends AppCompatActivity {
 
     public void changeSurveyStatusToDone() {
 
+        long doneTime = MyUtil.getCurrentTime();
         String childName1 = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
         String childName2 = "/survey_data/" + surveyKey;
         mDatabase.child(childName1).child("status").setValue(SurveyData.DONE);
         mDatabase.child(childName2).child("status").setValue(SurveyData.DONE);
+
+        mDatabase.child(childName1).child("done_time_stamp").setValue(doneTime);
+        mDatabase.child(childName2).child("done_time_stamp").setValue(doneTime);
     }
 
 

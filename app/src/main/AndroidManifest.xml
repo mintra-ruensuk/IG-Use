@@ -36,10 +36,10 @@
     <uses-permission
         android:name="android.permission.AUTHENTICATE_ACCOUNTS"
         android:maxSdkVersion="22" />
+
     <uses-permission xmlns:tools="http://schemas.android.com/tools"
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.Manifest.permission.READ_PHONE_STATE" />
@@ -47,7 +47,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+<!--    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />-->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 </manifest>

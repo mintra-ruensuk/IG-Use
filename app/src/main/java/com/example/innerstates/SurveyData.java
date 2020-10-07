@@ -9,6 +9,7 @@ public class SurveyData {
     public static final String INCOMPLETE = "incomplete";
     public static final String DONE = "done";
     private long timeStamp;
+    private long doneTimeStamp;
     private String uid;
     private String status;
     private String pageFlow;
@@ -54,7 +55,8 @@ public class SurveyData {
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("user_id", uid);
-        result.put("time_stamp", timeStamp);
+        result.put("start_time_stamp", timeStamp);
+        result.put("done_time_stamp", timeStamp);
         result.put("status", status);
         result.put("page_flow", pageFlow);
         result.put("survey_id", surveyId);

@@ -1,6 +1,7 @@
 package com.example.innerstates;
 
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
 import android.app.NotificationChannel;
@@ -80,19 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
         checkInviteCode();
 
-        startService(new Intent(getBaseContext(), AppStopped.class));
-        startService(new Intent(getBaseContext(), ScreenOnOffService.class));
 
 
-//        BottomNavigationView navView = findViewById(R.id.nav_view);
-//        // Passing each menu ID as a set of Ids because each
-//        // menu should be considered as top level destinations.
-//        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-//                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
-//                .build();
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-//        NavigationUI.setupWithNavController(navView, navController);
 
 
         userUniqueId = MyUtil.getDeviceUniqueID(this);
@@ -240,28 +230,46 @@ public class MainActivity extends AppCompatActivity {
                     android.os.Process.myUid(), mContext.getPackageName());
         }
         boolean granted = mode == AppOpsManager.MODE_ALLOWED;
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkDrawOverlayPermission();
-            requestUsageStatsPermission();
-        }
+//        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            //checkDrawOverlayPermission();
+//            requestUsageStatsPermission();
+//        }
 
-//        TextView headMessage = (TextView) findViewById(R.id.textView4);
-//        TextView subMessage = (TextView) findViewById(R.id.textView5);
         if (granted) {
 //            headMessage.setText("You're in the study!");
 //            subMessage.setText("This app will prompt you to record your emotions throughout the day. \n\nPlease keep this app running. If it is running, you will see a notice in your notification drawer.");
 
 //            mDetectAppsService = new DetectAppsService();
 //            mServiceIntent = new Intent(this, DetectAppsService.class);
-//            if (!isMyServiceRunning(mDetectAppsService.getClass(), this)) {
-//                startService(mServiceIntent);
-//            }
+            final EditText editText = findViewById(R.id.editTextInviteCode);
+            final Button button = findViewById(R.id.submitInviteCode);
+            editText.setVisibility(View.VISIBLE);
+            button.setVisibility(View.VISIBLE);
+
+            checkInviteCode();
+
+            if (!isMyServiceRunning(AppStopped.class)) {
+                startService(new Intent(getBaseContext(), AppStopped.class));
+            }
+            if (!isMyServiceRunning(ScreenOnOffService.class)) {
+                startService(new Intent(getBaseContext(), ScreenOnOffService.class));
+            }
+
         }
         else {
 //            headMessage.setText("Your permission is required.");
 //            subMessage.setText("To participate in this study, you must turn on usage data access in your settings. \n\nOn most devices, this is found under: Settings > Security > Usage data access ");
             showDialog(this);
         }
+    }
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @TargetApi(Build.VERSION_CODES.M)
