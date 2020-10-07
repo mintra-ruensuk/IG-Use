@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,15 +35,21 @@ public class ScreenOnOffReceiver extends BroadcastReceiver {
         String userUniqueId = sharedPref.getString("user_unique_id", "nodata");
         String inviteUserId = sharedPref.getString("invitation_user_id", "nodata");
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference mDatabase = database.getReference();
 
         String childName = "/users/" + userUniqueId + "/screen-onoff/";
         String key = mDatabase.child(childName).push().getKey();
-        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, getInviteUserId(), mContext);
-        Map<String, Object> postValues = appUsage.toMap();
+
+        HashMap<String, Object> postValues = new HashMap<>();
+        postValues.put("time_stamp", MyUtil.getCurrentTime());
+        postValues.put("screen", onOff);
+        postValues.put("invite_user_id", inviteUserId);
+        postValues.put("uid", userUniqueId);
+
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put(childName + key, postValues);
-        childUpdates.put("/inner_usage/" + key, postValues);
 
         mDatabase.updateChildren(childUpdates);
     }
