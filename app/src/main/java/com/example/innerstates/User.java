@@ -1,6 +1,5 @@
 package com.example.innerstates;
 
-import android.app.Activity;
 import android.os.Build;
 
 import com.google.firebase.database.IgnoreExtraProperties;
@@ -25,7 +24,7 @@ public class User {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String id, String inviteUserId, Activity activity) {
+    public User(String id, String inviteUserId) {
         this.id = id;
         this.createdTime = new Date().toString();
         this.osVersion = System.getProperty("os.version"); // OS version

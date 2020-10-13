@@ -6,22 +6,16 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
-public class SampleBootReceiver extends BroadcastReceiver {
-
+public class SensorRestarterBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            // Set the alarm here.
-            Log.d("cccccc--->>", "BOOT COMPLETED");
+        Log.i(SensorRestarterBroadcastReceiver.class.getSimpleName(), "Service Stops! Oooooooooooooppppssssss!!!!");
+        if (!MainActivity.isMyServiceRunning(MainService.class, context)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(new Intent(context, MainService.class));
             } else {
                 context.startService(new Intent(context, MainService.class));
             }
-        }else {
-            Log.d("cccccc--->>", "BOOT COMPLETED BUTTTTTTTTTT");
         }
-
-
     }
 }

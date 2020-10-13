@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -23,6 +24,7 @@ public class ScreenOnOffService extends Service {
     }
     @Override
     public void onCreate() {
+        Log.d("ScreenOnOffService", "ScreenOnOffService----<><><><");
         registerScreenStatusReceiver();
         if (Build.VERSION.SDK_INT >= 26) {
             String CHANNEL_ID = "ScreenOnOff";

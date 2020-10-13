@@ -80,13 +80,13 @@ public class SurveyActivity extends AppCompatActivity {
 
 
 
-        if(MainActivity.sample != null) {
+        if(MainService.sample != null) {
             createSurvey();
             pushSurveyDataToDB();
 
-            MainActivity.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
-            changeNotiToOpenedStatus(MainActivity.notificationId);
-            MainActivity.cancelAllNotification(mContext);
+            MainService.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
+            changeNotiToOpenedStatus(MainService.notificationId);
+            MainService.cancelAllNotification(mContext);
             displaySurvey();
         }
 
@@ -414,7 +414,7 @@ public class SurveyActivity extends AppCompatActivity {
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        MainActivity.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
+                        MainService.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
                         finish();
                         dialog.dismiss();
                     }
