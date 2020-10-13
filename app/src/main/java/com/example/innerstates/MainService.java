@@ -109,7 +109,7 @@ public class MainService extends Service {
                             && !packageName.equals(igPackageName)) {
 
                         // Use IG at least 15 seconds
-                        if(MyUtil.getCurrentTime() >= (igOpenTime + 5)) {
+                        if(MyUtil.getCurrentTime() >= (igOpenTime + 13)) {
                             sample.setStatus(Sample.POPUP);
 
 
@@ -124,7 +124,7 @@ public class MainService extends Service {
                     }
                     if (sample.getStatus() == Sample.POPUP) {
                         // 5 minutes = 300seconds
-                        if(MyUtil.getCurrentTime() >= (notifyTime + 60)) {
+                        if(MyUtil.getCurrentTime() >= (notifyTime + 300)) {
                             cancelNotification(instance, notificationId);
                             recordCancelNotification(notificationId);
 
@@ -133,7 +133,7 @@ public class MainService extends Service {
                     }
                     if (sample.getStatus() == Sample.WAIT_FOR_NEXT_POPUP) {
                         //wait for 1.5 hours and then set ready state
-                        if(MyUtil.getCurrentTime() >= (startWaitNextNotificationTime + 20)) {
+                        if(MyUtil.getCurrentTime() >= (startWaitNextNotificationTime + (90 * 60))) {
                             sample.setStatus(Sample.READY);
                         }
                     }

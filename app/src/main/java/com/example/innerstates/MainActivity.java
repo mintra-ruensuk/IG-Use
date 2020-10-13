@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.provider.Settings.Secure;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -474,7 +475,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         String inviteUserId = getInviteUserId();
-        final String userUniqueId = getUserUniqueId();
+        final String userUniqueId = Secure.getString(this.getContentResolver(),
+                Secure.ANDROID_ID);
 //        Log.e("idididididi--->", inviteUserId);
 
         if (!inviteUserId.equals("nodata")) {

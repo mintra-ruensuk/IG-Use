@@ -27,6 +27,7 @@ public class SurveyData {
         this.pageFlow = "1";
         this.surveyId = surveyId;
         this.inviteUserId = inviteUserId;
+        this.doneTimeStamp = 0;
         answer = new HashMap<>();
         answer.put("ty1", "0"); // type of communication
         answer.put("so1", "0"); // social comparison 1
@@ -56,7 +57,7 @@ public class SurveyData {
         HashMap<String, Object> result = new HashMap<>();
         result.put("user_id", uid);
         result.put("start_time_stamp", timeStamp);
-        result.put("done_time_stamp", timeStamp);
+        result.put("done_time_stamp", doneTimeStamp);
         result.put("status", status);
         result.put("page_flow", pageFlow);
         result.put("survey_id", surveyId);
