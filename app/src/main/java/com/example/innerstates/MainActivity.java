@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
     private Sample igUsage;
     private Sample ourAppUsage;
     final AppChecker appChecker = new AppChecker();
-    private long igOpenTime = 0;
-    private long notifyTime = 0;
+    private static long igOpenTime = 0;
+    private static long notifyTime = 0;
     public static int notificationId;
     public static long startWaitNextNotificationTime = 0;
     private SharedPreferences sharedPref;
@@ -108,20 +108,23 @@ public class MainActivity extends AppCompatActivity {
                         sample.setStatus(Sample.IG_OPENED);
                         igOpenTime = MyUtil.getCurrentTime();
                     }
+//                    if (sample.getStatus() == Sample.IG_OPENED && packageName.equals(igPackageName)) {
+//                        sample.setStatus(Sample.ON_IG);
+//
+//                    }
                     if (sample.getStatus() == Sample.IG_OPENED
                             && !packageName.equals(igPackageName)) {
 
-                        long test = MyUtil.getCurrentTime();
                         // Use IG at least 15 seconds
-                        if(test >= (igOpenTime + 1)) {
+                        if(MyUtil.getCurrentTime() >= (igOpenTime + 5)) {
                             sample.setStatus(Sample.POPUP);
 
 
                             notifyHowYouFeel();
                             notifyTime = MyUtil.getCurrentTime();
-//                            sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
-//                            sleep(2000);
 
+                        }else {
+                            sample.setStatus(Sample.READY);
                         }
 
 
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-        }).timeout(3000).start(this);
+        }).timeout(2000).start(this);
 
         createNotificationChannel();
 
@@ -212,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_HIGH;
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
 //            channel.setImportance(NotificationManager.IMPORTANCE_HIGH);
@@ -345,6 +349,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("notificationId", notificationId);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        writeNewNotification(notificationId);
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.my_icon)
@@ -352,7 +357,8 @@ public class MainActivity extends AppCompatActivity {
                 .setContentText("Seem that you've just used Instagram. How do you feel?")
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText("You've just used Instagram. How do you feel now?"))
-                .setFullScreenIntent(pendingIntent, true)
+//                .setFullScreenIntent(pendingIntent, true)
+                .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 //                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
@@ -360,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
 
         // notificationId is a unique int for each notification that you must define
         notificationManager.notify(notificationId, builder.build());
-        writeNewNotification(notificationId);
+
 
     }
 

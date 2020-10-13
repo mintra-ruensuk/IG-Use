@@ -1,7 +1,7 @@
 package com.example.innerstates;
 
 public class Sample {
-    public static final int READY = 0, IG_OPENED = 1, POPUP = 2, WAIT_FOR_NEXT_POPUP = 3;
+    public static final int READY = 0, IG_OPENED = 1, POPUP = 2, WAIT_FOR_NEXT_POPUP = 3, ON_IG=4;
 
     private int sampleTime = 0;
     private long sampleStartTime;
@@ -26,8 +26,10 @@ public class Sample {
         switch (this.status) {
             case READY: return "READY";
             case IG_OPENED: return "IG_OPENED";
+            case ON_IG: return "ON_IG";
             case POPUP: return "POPUP";
             case WAIT_FOR_NEXT_POPUP: return "WAIT_FOR_NEXT_POPUP";
+
         }
         return "NA";
     }

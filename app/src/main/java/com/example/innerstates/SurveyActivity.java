@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -76,14 +77,19 @@ public class SurveyActivity extends AppCompatActivity {
         userUniqueId = MyUtil.getDeviceUniqueID(this);
 
         Log.d("tagtag", "user unique id --> " + userUniqueId.toString());
-        createSurvey();
-        pushSurveyDataToDB();
 
 
-        MainActivity.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
-        changeNotiToOpenedStatus(MainActivity.notificationId);
-        MainActivity.cancelAllNotification(mContext);
-        displaySurvey();
+
+        if(MainActivity.sample != null) {
+            createSurvey();
+            pushSurveyDataToDB();
+
+            MainActivity.sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
+            changeNotiToOpenedStatus(MainActivity.notificationId);
+            MainActivity.cancelAllNotification(mContext);
+            displaySurvey();
+        }
+
 
 
 

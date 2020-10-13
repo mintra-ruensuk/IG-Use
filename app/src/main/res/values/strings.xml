@@ -4,7 +4,7 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="channel_name">Survey</string>
-    <string name="channel_description">Please respond to survey notification within 1 hour.</string>
+    <string name="channel_description">Please respond to survey notification within 5 minutes.</string>
     <string name="title_activity_survey">Instagram Use Survey</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

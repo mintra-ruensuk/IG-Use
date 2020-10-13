@@ -10,13 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".SurveyActivity"
-            android:label="@string/title_activity_survey"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
 
-        </activity>
         <activity
             android:name=".MainActivity"
             android:label="IG Use"
@@ -28,11 +22,41 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".SurveyActivity"
+            android:label="@string/title_activity_survey"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true">
+
+        </activity>
+
         <service
             android:name=".AppStopped"
             android:stopWithTask="false" />
+
         <service android:name=".ScreenOnOffService" />
+
+<!--        <receiver-->
+<!--            android:enabled="true"-->
+<!--            android:exported="true"-->
+<!--            android:name=".StartMyServiceAtBootReceiver"-->
+<!--            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">-->
+
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.BOOT_COMPLETED" />-->
+<!--                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />-->
+<!--                <action android:name="android.intent.action.QUICKBOOT_POWERON" />-->
+<!--                <action android:name="android.intent.action.REBOOT"/>-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--            </intent-filter>-->
+
+<!--        </receiver>-->
+
     </application>
+
     <uses-permission
         android:name="android.permission.AUTHENTICATE_ACCOUNTS"
         android:maxSdkVersion="22" />
@@ -47,7 +71,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-<!--    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />-->
+    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 </manifest>
