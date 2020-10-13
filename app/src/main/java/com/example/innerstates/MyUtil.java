@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.provider.Settings;
 
 import java.util.Random;
+import java.util.UUID;
 
 public class MyUtil {
 
@@ -37,6 +38,9 @@ public class MyUtil {
         String device_unique_id = Settings.Secure.getString(activity.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         return device_unique_id;
+    }
+    public static String getUUID() {
+        return UUID.randomUUID().toString();
     }
 
 

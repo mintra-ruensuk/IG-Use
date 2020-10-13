@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
+import android.provider.Settings.Secure;
 import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
@@ -48,7 +49,7 @@ public class MainService extends Service {
     public static int notificationId;
     public static long startWaitNextNotificationTime = 0;
     private SharedPreferences sharedPref;
-    private String inviteUserId;
+    private String inviteUserId ="default";
     private static int FOREGROUND_ID=16;
 //    public static User user;
 
@@ -82,7 +83,8 @@ public class MainService extends Service {
 
 
 
-        userUniqueId = getUserUniqueId();
+        userUniqueId = Secure.getString(this.getContentResolver(),
+                Secure.ANDROID_ID);
 
         setAlarmManager();
 
@@ -208,7 +210,7 @@ public class MainService extends Service {
     }
 
     private void writeNewUser() {
-        final User user = new User(userUniqueId, inviteUserId);
+        final User user = new User(userUniqueId, getInviteUserId());
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
