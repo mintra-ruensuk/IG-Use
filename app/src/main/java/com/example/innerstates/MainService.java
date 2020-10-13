@@ -49,6 +49,7 @@ public class MainService extends Service {
     public static long startWaitNextNotificationTime = 0;
     private SharedPreferences sharedPref;
     private String inviteUserId;
+    private static int FOREGROUND_ID=16;
 //    public static User user;
 
     private AlarmManager alarmMgr;
@@ -158,12 +159,23 @@ public class MainService extends Service {
 
             android.app.Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("").setContentText("").build();
 
-            startForeground(1, notification);
+            startForeground(FOREGROUND_ID, notification);
         }
 
         Log.d("oncreate---------->", "onCreate");
     }
 
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("c", "service destroyed");
+        instance = null;
+        stopForeground(true);
+
+        Intent broadcastIntent = new Intent("RestartSensor");
+        sendBroadcast(broadcastIntent);
+    }
 
     private void notifyHowYouFeel() {
         notificationId = MyUtil.generateFiveDigit();
@@ -308,7 +320,7 @@ public class MainService extends Service {
         calendar.set(Calendar.MINUTE, 15);
 
         // setRepeating() lets you specify a precise custom interval--in this case,
-        // 20 minutes.
+        // 2 hours
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 1000 * 60 * 120, alarmIntent);
     }
@@ -342,6 +354,7 @@ public class MainService extends Service {
             notificationManager.createNotificationChannel(channel);
         }
     }
+
 
 
 

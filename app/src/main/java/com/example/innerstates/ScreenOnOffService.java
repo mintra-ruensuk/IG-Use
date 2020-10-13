@@ -29,7 +29,7 @@ public class ScreenOnOffService extends Service {
         if (Build.VERSION.SDK_INT >= 26) {
             String CHANNEL_ID = "ScreenOnOff";
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                    "Keep me running!",
+                    "Keep ScreenOnOff Service running!",
                     NotificationManager.IMPORTANCE_DEFAULT);
 
             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
