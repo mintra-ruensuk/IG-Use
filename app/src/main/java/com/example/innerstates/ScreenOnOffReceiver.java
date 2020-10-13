@@ -35,6 +35,9 @@ public class ScreenOnOffReceiver extends BroadcastReceiver {
         String userUniqueId = sharedPref.getString("user_unique_id", "nodata");
         String inviteUserId = sharedPref.getString("invitation_user_id", "nodata");
 
+        if(userUniqueId.equals("nodata")) {
+
+        }
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference mDatabase = database.getReference();
 

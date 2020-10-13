@@ -38,22 +38,12 @@
             android:stopWithTask="false" />
 
         <service android:name=".ScreenOnOffService" />
-
-<!--        <receiver-->
-<!--            android:enabled="true"-->
-<!--            android:exported="true"-->
-<!--            android:name=".StartMyServiceAtBootReceiver"-->
-<!--            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">-->
-
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.BOOT_COMPLETED" />-->
-<!--                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />-->
-<!--                <action android:name="android.intent.action.QUICKBOOT_POWERON" />-->
-<!--                <action android:name="android.intent.action.REBOOT"/>-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--            </intent-filter>-->
-
-<!--        </receiver>-->
+        <receiver android:name=".SampleBootReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
+        </receiver>
 
     </application>
 

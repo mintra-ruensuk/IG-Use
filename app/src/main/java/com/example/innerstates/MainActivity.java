@@ -2,6 +2,7 @@ package com.example.innerstates;
 
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
 import android.app.NotificationChannel;
@@ -28,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.rvalerio.fgchecker.AppChecker;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private String inviteUserId;
 //    public static User user;
 
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
+
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference mDatabase = database.getReference();
@@ -82,12 +87,23 @@ public class MainActivity extends AppCompatActivity {
         checkInviteCode();
 
 
-
-
-
         userUniqueId = MyUtil.getDeviceUniqueID(this);
 
 
+        alarmMgr = (AlarmManager)mContext.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(mContext, MainActivity.class);
+        alarmIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
+
+        // Set the alarm to start at 8:30 a.m.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 14);
+        calendar.set(Calendar.MINUTE, 28);
+
+        // setRepeating() lets you specify a precise custom interval--in this case,
+        // 20 minutes.
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                1000 * 60 * 2, alarmIntent);
 
         appChecker.other(new AppChecker.Listener() {
             @Override
@@ -108,10 +124,6 @@ public class MainActivity extends AppCompatActivity {
                         sample.setStatus(Sample.IG_OPENED);
                         igOpenTime = MyUtil.getCurrentTime();
                     }
-//                    if (sample.getStatus() == Sample.IG_OPENED && packageName.equals(igPackageName)) {
-//                        sample.setStatus(Sample.ON_IG);
-//
-//                    }
                     if (sample.getStatus() == Sample.IG_OPENED
                             && !packageName.equals(igPackageName)) {
 
@@ -158,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
         writeNewUser();
 
-
+        Log.d("oncreate---------->", "onCreate");
     }
 
 
@@ -166,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         refreshMessage();
+        Log.d("onResume---------->", "onResume");
     }
 
     private void recordIgUsage(String packageName) {
