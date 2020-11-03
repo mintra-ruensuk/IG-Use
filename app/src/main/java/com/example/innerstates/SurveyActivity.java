@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -376,6 +375,7 @@ public class SurveyActivity extends AppCompatActivity {
 
         Question esteem1 = new Question("es1", KoreanQuestion.esteem1, KoreanQuestion.esteemScale());
         Question esteem2 = new Question("es2", KoreanQuestion.esteem2, KoreanQuestion.esteemScale());
+        Question esteem3 = new Question("es3", KoreanQuestion.esteem3, KoreanQuestion.esteemScale());
 
 
 
@@ -396,7 +396,7 @@ public class SurveyActivity extends AppCompatActivity {
         surveyQuestion.put("page4", new Question[] {body1, body2});
         surveyQuestion.put("page5", new Question[] {envy1, envy2, envy3});
         surveyQuestion.put("page6", new Question[] {envy4, envy5, envy6});
-        surveyQuestion.put("page7", new Question[] {esteem1, esteem2});
+        surveyQuestion.put("page7", new Question[] {esteem1, esteem2, esteem3});
         surveyQuestion.put("page8", new Question[] {depress1, depress2});
 
 
