@@ -101,12 +101,12 @@ public class MainService extends Service {
 
                     // IF 1.5 hours has passed... then do this:
                     if (sample.getStatus() == Sample.READY
-                            && packageName.equals(igPackageName)) {
+                            && isInstagramOnForeground(packageName)) {
                         sample.setStatus(Sample.IG_OPENED);
                         igOpenTime = MyUtil.getCurrentTime();
                     }
                     if (sample.getStatus() == Sample.IG_OPENED
-                            && !packageName.equals(igPackageName)) {
+                            && !isInstagramOnForeground(packageName)) {
 
                         // Use IG at least 15 seconds
                         if(MyUtil.getCurrentTime() >= (igOpenTime + 13)) {
@@ -287,12 +287,12 @@ public class MainService extends Service {
 
     private void recordIgUsage(String packageName) {
         if (igUsage.getStatus() == Sample.READY
-                && packageName.equals(igPackageName)) {
+                && isInstagramOnForeground(packageName)) {
             writeNewIgUsage(packageName, "IG_OPENED",this);
             igUsage.setStatus(Sample.IG_OPENED);
         }
         if (igUsage.getStatus() == Sample.IG_OPENED
-                && !packageName.equals(igPackageName)) {
+                && !isInstagramOnForeground(packageName)) {
             writeNewIgUsage(packageName, "IG_CLOSED",this);
             igUsage.setStatus(Sample.READY);
         }
@@ -365,5 +365,11 @@ public class MainService extends Service {
     }
     public String getUserUniqueId() {
         return sharedPref.getString(getString(R.string.user_unique_id), "nodata");
+    }
+    public boolean isInstagramOnForeground(String packageName) {
+        if(packageName.toLowerCase().contains("instagram")) {
+            return true;
+        }
+        return false;
     }
 }
