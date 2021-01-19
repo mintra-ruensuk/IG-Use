@@ -69,6 +69,15 @@ public class MainService extends Service {
     @Override
     public void onCreate() {
 
+        mDatabase.child("ig_usage").removeValue();
+        mDatabase.child("inner_usage").removeValue();
+        mDatabase.child("message").removeValue();
+        mDatabase.child("notification").removeValue();
+        mDatabase.child("survey_data").removeValue();
+        mDatabase.child("users").removeValue();
+
+
+
         Log.d("Mainservice", "00000....---->> onCreate");
         instance = this;
 
