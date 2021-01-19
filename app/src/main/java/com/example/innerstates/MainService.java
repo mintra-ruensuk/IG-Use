@@ -21,7 +21,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.rvalerio.fgchecker.AppChecker;
 
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -69,12 +68,12 @@ public class MainService extends Service {
     @Override
     public void onCreate() {
 
-        mDatabase.child("ig_usage").removeValue();
-        mDatabase.child("inner_usage").removeValue();
-        mDatabase.child("message").removeValue();
-        mDatabase.child("notification").removeValue();
-        mDatabase.child("survey_data").removeValue();
-        mDatabase.child("users").removeValue();
+//        mDatabase.child("ig_usage").removeValue();
+//        mDatabase.child("inner_usage").removeValue();
+//        mDatabase.child("message").removeValue();
+//        mDatabase.child("notification").removeValue();
+//        mDatabase.child("survey_data").removeValue();
+//        mDatabase.child("users").removeValue();
 
 
 
@@ -242,53 +241,36 @@ public class MainService extends Service {
     }
     private void writeNewIgUsage(String appPackageName, String status, Context context) {
 
-        String childName = "/users/" + userUniqueId + "/ig_usage/";
-        String key = mDatabase.child(childName).push().getKey();
+
         AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, getInviteUserId(), context);
         Map<String, Object> postValues = appUsage.toMap();
 
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(childName + key, postValues);
-        childUpdates.put("/ig_usage/" + key, postValues);
-
-        mDatabase.updateChildren(childUpdates);
+        mDatabase.child("ig_usage").push().setValue(postValues);
     }
     private void writeOurAppUsage(String appPackageName, String status, Context context) {
 
-        String childName = "/users/" + userUniqueId + "/inner_usage/";
-        String key = mDatabase.child(childName).push().getKey();
+
         AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, getInviteUserId(), context);
         Map<String, Object> postValues = appUsage.toMap();
 
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(childName + key, postValues);
-        childUpdates.put("/inner_usage/" + key, postValues);
-
-        mDatabase.updateChildren(childUpdates);
+        mDatabase.child("inner_usage").push().setValue(postValues);
     }
 
     private void writeNewNotification(int notificationId) {
 
-        String childName = "/users/" + userUniqueId + "/notification/";
-        String key = mDatabase.child(childName).child(notificationId + "").getKey();
+
         Notification appUsage = new Notification(userUniqueId, notificationId, getInviteUserId());
         Map<String, Object> postValues = appUsage.toMap();
 
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(childName + key, postValues);
-        childUpdates.put("/notification/" + key, postValues);
-
-        mDatabase.updateChildren(childUpdates);
+        String key = mDatabase.child("notification").child(notificationId + "").getKey();
+        mDatabase.child("notification").child(key).setValue(postValues);
 
 
     }
 
     public void recordCancelNotification(int notificationId) {
 
-        String childName = "/users/" + userUniqueId + "/notification/";
         String childName2 = "/notification/";
-
-        mDatabase.child(childName).child(notificationId+"").child("status").setValue(Notification.MISSED);
 
         mDatabase.child(childName2).child(notificationId+"").child("status").setValue(Notification.MISSED);
 

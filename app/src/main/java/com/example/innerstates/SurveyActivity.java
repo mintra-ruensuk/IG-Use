@@ -144,31 +144,6 @@ public class SurveyActivity extends AppCompatActivity {
                 questionLayOut.addView(imageView);
                 questionLayOut.addView(createRadioButton(question.getChoices(), question.getId()));
             }
-//            if(page.equals("page9")) {
-//
-//                TextView textView = new TextView(this);
-//                textView.setPadding(0,10,0,50);
-//                textView.setText(question.getQuestionTitle());
-//                textView.setTextColor(Color.BLACK);
-//                textView.setGravity(Gravity.CENTER);
-//                textView.setTypeface(null, Typeface.BOLD);
-//
-//                questionLayOut.addView(textView);
-//
-//                openEndedText[index] = new EditText(this);
-//                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
-//                openEndedText[index].setLayoutParams(lp);
-//                openEndedText[index].setWidth(500);
-//                openEndedText[index].setSingleLine(false);
-//                openEndedText[index].setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-//                openEndedText[index].setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
-//                openEndedText[index].setText(userOpenEndedText[index]);
-////                openEndedText[index].setHint("Write at least 20 characters");
-//
-//                questionLayOut.addView(openEndedText[index]);
-//                index += 1;
-//
-//            }
             else {
                 TextView textView = new TextView(this);
                 textView.setPadding(0,10,0,0);
@@ -292,50 +267,24 @@ public class SurveyActivity extends AppCompatActivity {
         return true;
     }
 
-//    private void pushOpenEndedText() {
-//        final String childName = "/users/" + userUniqueId + "/survey_data/" + surveyKey + "/answer/";
-//        final String childName2 = "/survey_data/" + surveyKey;
-//
-//        userOpenEndedText = getUserOpenEndedText();
-//
-//
-//        mDatabase.child(childName).child("answer").child("op1").setValue(userOpenEndedText[0]);
-//        mDatabase.child(childName2).child("answer").child("op1").setValue(userOpenEndedText[0]);
-//        mDatabase.child(childName).child("answer").child("op2").setValue(userOpenEndedText[1]);
-//        mDatabase.child(childName2).child("answer").child("op2").setValue(userOpenEndedText[1]);
-//
-//        mDatabase.child(childName).child("status").setValue(SurveyData.DONE);
-//        mDatabase.child(childName2).child("status").setValue(SurveyData.DONE);
-//
-//    }
 
     private void pushFlowToDB() {
-        final String childName = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
         final String childName2 = "/survey_data/" + surveyKey;
         final String page = currentPage + "";
         surveyData.setPageFlow(surveyData.getPageFlow()+page);
 
-        mDatabase.child(childName).child("page_flow").setValue(surveyData.getPageFlow());
         mDatabase.child(childName2).child("page_flow").setValue(surveyData.getPageFlow());
 
     }
     private void pushSurveyDataToDB() {
-        // Create new post at /user-posts/$userid/$postid and at
-        // /posts/$postid simultaneously
-        String childName = "/users/" + userUniqueId + "/survey_data/";
         String surveyId = MyUtil.getRandomString(10);
 
-//        surveyKey = mDatabase.child(childName).push().getKey();
-        surveyKey = mDatabase.child(childName).child(surveyId).getKey();
-//        AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, mContext);
+
+        surveyKey = mDatabase.child("survey_data").child(surveyId).getKey();
         surveyData = new SurveyData(userUniqueId, surveyId, getInviteUserId());
         Map<String, Object> postValues = surveyData.toMap();
 
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(childName + surveyKey, postValues);
-        childUpdates.put("/survey_data/" + surveyKey, postValues);
-
-        mDatabase.updateChildren(childUpdates);
+        mDatabase.child("survey_data").child(surveyKey).setValue(postValues);
 
         surveyAnswer = surveyData.getAnswer();
         mDatabase.child("/survey_data/" + surveyKey + "/answer/").addValueEventListener(new ValueEventListener() {
@@ -482,9 +431,7 @@ public class SurveyActivity extends AppCompatActivity {
         String answerKey = answerString.substring(0,3);
         String answerValue = answerString.substring(3,4);
 
-        String childName1 = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
         String childName2 = "/survey_data/" + surveyKey;
-        mDatabase.child(childName1).child("answer").child(answerKey).setValue(answerValue);
         mDatabase.child(childName2).child("answer").child(answerKey).setValue(answerValue);
     }
 
@@ -500,12 +447,7 @@ public class SurveyActivity extends AppCompatActivity {
 
         long open_time_stamp = System.currentTimeMillis() / 1000L;
 
-        String childName = "/users/" + userUniqueId + "/notification/";
         String childName2 = "/notification/";
-
-        mDatabase.child(childName).child(notificationId+"").child("status").setValue(Notification.OPENED);
-        mDatabase.child(childName).child(notificationId+"").child("open_time_stamp").setValue(open_time_stamp);
-
         mDatabase.child(childName2).child(notificationId+"").child("status").setValue(Notification.OPENED);
         mDatabase.child(childName2).child(notificationId+"").child("open_time_stamp").setValue(open_time_stamp);
 
@@ -528,12 +470,9 @@ public class SurveyActivity extends AppCompatActivity {
     public void changeSurveyStatusToDone() {
 
         long doneTime = MyUtil.getCurrentTime();
-        String childName1 = "/users/" + userUniqueId + "/survey_data/" + surveyKey;
         String childName2 = "/survey_data/" + surveyKey;
-        mDatabase.child(childName1).child("status").setValue(SurveyData.DONE);
         mDatabase.child(childName2).child("status").setValue(SurveyData.DONE);
 
-        mDatabase.child(childName1).child("done_time_stamp").setValue(doneTime);
         mDatabase.child(childName2).child("done_time_stamp").setValue(doneTime);
     }
 
