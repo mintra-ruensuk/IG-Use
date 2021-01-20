@@ -39,6 +39,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference mDatabase = database.getReference();
     private SharedPreferences sharedPref;
+    private String userUniqueId;
 
     @Override
     public void onCreate() {
@@ -54,6 +55,8 @@ public class MotionLoggerService extends Service implements SensorEventListener 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         Log.d(DEBUG_TAG, "---------START SERVICE");
+
+        userUniqueId = getUserUniqueId();
 
         sensorList.add("ACCELEROMETER");
         sensorList.add("GYROSCOPE");
@@ -79,6 +82,8 @@ public class MotionLoggerService extends Service implements SensorEventListener 
         for (MySensor sensor : mSensors.values()) {
             if (sensor.getSensor() != null) {
                 mSensorManager.registerListener(this, sensor.getSensor(), SensorManager.SENSOR_DELAY_NORMAL);
+
+//                mSensorManager.registerListener(this, sensor.getSensor(), 1000000, 1000000);
             }
         }
 
@@ -96,7 +101,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         // grab the values and timestamp -- off the main thread
-        new MotionSensorEventLoggerTask().execute(sensorEvent);
+        new MotionSensorEventLoggerTask(userUniqueId).execute(sensorEvent);
     }
 
     @Override
@@ -109,7 +114,9 @@ public class MotionLoggerService extends Service implements SensorEventListener 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                String userUniqueId = getUserUniqueId();
+                if (userUniqueId == null) {
+                    userUniqueId = getUserUniqueId();
+                }
                 if (!snapshot.child("users").child(userUniqueId).hasChild("sensor_meta")) {
 
                     for (MySensor sensor : mSensors.values()) {
@@ -146,4 +153,13 @@ public class MotionLoggerService extends Service implements SensorEventListener 
         mSensors.put(mySensor.getName(), mySensor);
     }
 
+    @Override
+    public void onDestroy() {
+        Log.d(DEBUG_TAG, "----onDestroy");
+        for (MySensor sensor : mSensors.values()) {
+            if (sensor.getSensor() != null) {
+                mSensorManager.unregisterListener(this, sensor.getSensor());
+            }
+        }
+    }
 }

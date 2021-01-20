@@ -112,6 +112,8 @@ public class MainService extends Service {
                             && isInstagramOnForeground(packageName)) {
                         sample.setStatus(Sample.IG_OPENED);
                         igOpenTime = MyUtil.getCurrentTime();
+
+                        startMotionLoggerService();
                     }
                     if (sample.getStatus() == Sample.IG_OPENED
                             && !isInstagramOnForeground(packageName)) {
@@ -127,6 +129,9 @@ public class MainService extends Service {
                         }else {
                             sample.setStatus(Sample.READY);
                         }
+
+                        stopMotionLoggerService();
+
 
 
                     }
@@ -362,5 +367,21 @@ public class MainService extends Service {
             return true;
         }
         return false;
+    }
+
+    public void startMotionLoggerService() {
+        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
+            startService(new Intent(getBaseContext(), MotionLoggerService.class));
+        }else {
+            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
+        }
+    }
+
+    public void  stopMotionLoggerService() {
+        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
+            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
+        }
     }
 }
