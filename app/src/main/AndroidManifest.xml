@@ -49,21 +49,21 @@
 
 
 
-<!--        <receiver android:name=".SampleBootReceiver"-->
-<!--            android:enabled="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.BOOT_COMPLETED"></action>-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
-<!--        <receiver-->
-<!--            android:name=".SensorRestarterBroadcastReceiver"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="true"-->
-<!--            android:label="RestartServiceWhenStopped">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="RestartSensor"/>-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
+        <receiver android:name=".SampleBootReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".SensorRestarterBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="RestartServiceWhenStopped">
+            <intent-filter>
+                <action android:name="RestartSensor"/>
+            </intent-filter>
+        </receiver>
 
     </application>
 

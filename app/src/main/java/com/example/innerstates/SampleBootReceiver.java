@@ -15,11 +15,8 @@ public class SampleBootReceiver extends BroadcastReceiver {
             Log.d("cccccc--->>", "BOOT COMPLETED");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(new Intent(context, MainService.class));
-//                context.startForegroundService(new Intent(context, MotionLoggerService.class));
-
             } else {
                 context.startService(new Intent(context, MainService.class));
-//                context.startService(new Intent(ontext, MotionLoggerService.class));
 
             }
         }else {

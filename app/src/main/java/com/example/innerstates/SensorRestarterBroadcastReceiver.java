@@ -18,12 +18,5 @@ public class SensorRestarterBroadcastReceiver extends BroadcastReceiver {
             }
         }
 
-        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, context)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(new Intent(context, MotionLoggerService.class));
-            } else {
-                context.startService(new Intent(context, MotionLoggerService.class));
-            }
-        }
     }
 }
