@@ -44,6 +44,8 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     @Override
     public void onCreate() {
         Log.d(DEBUG_TAG, "00000....---->> onCreate MotionLoggerService");
+
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)

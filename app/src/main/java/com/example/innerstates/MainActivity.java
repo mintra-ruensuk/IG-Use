@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     public final static int REQUEST_CODE = 5463;
 //    final static String CHANNEL_ID = "123456";
+    private static final String DEBUG_TAG = "MainActivity";
     private Context mContext;
     private SharedPreferences sharedPref;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -61,6 +62,11 @@ public class MainActivity extends AppCompatActivity {
         Log.d("onResume---------->", "onResume");
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopMotionLoggerService();
+    }
 
     private void refreshMessage() {
         AppOpsManager appOps = (AppOpsManager) mContext.getSystemService(Context.APP_OPS_SERVICE);
@@ -74,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
 //            //checkDrawOverlayPermission();
 //            requestUsageStatsPermission();
 //        }
-
         if (granted) {
 //            headMessage.setText("You're in the study!");
 //            subMessage.setText("This app will prompt you to record your emotions throughout the day. \n\nPlease keep this app running. If it is running, you will see a notice in your notification drawer.");
@@ -97,8 +102,6 @@ public class MainActivity extends AppCompatActivity {
                 startService(new Intent(getBaseContext(), ScreenOnOffService.class));
             }
 
-//            mMainService = new MainService();
-//            mServiceIntent = new Intent(this, MainService.class);
             if (!isMyServiceRunning(MainService.class, this)) {
                 Log.d("serviceeeeee------>", "MainService is starting...");
                 startService(new Intent(getBaseContext(), MainService.class));
@@ -106,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("serviceeeeee------>", "MainService is running!");
             }
 
+            Log.d(DEBUG_TAG, " ...... !!!!! ....");
+            startMotionLoggerService();
 
         }
         else {
@@ -240,6 +245,22 @@ public class MainActivity extends AppCompatActivity {
     }
     public String getUserUniqueId() {
         return sharedPref.getString(getString(R.string.user_unique_id), "nodata");
+    }
+
+    public void startMotionLoggerService() {
+        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
+            startService(new Intent(getBaseContext(), MotionLoggerService.class));
+        }else {
+            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
+        }
+    }
+
+    public void  stopMotionLoggerService() {
+        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
+            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
+        }
     }
 
 
