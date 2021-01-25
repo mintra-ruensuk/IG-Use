@@ -11,7 +11,9 @@ public class MyUtil {
     private static final String ALLOWED_CHARACTERS ="0123456789qwertyuiopasdfghjklzxcvbnm";
 
     public static long getCurrentTime() {
-        return System.currentTimeMillis() / 1000L;
+        return System.currentTimeMillis() / 1L;
+//        return System.currentTimeMillis() / 1000L;
+
     }
 
     public static int generateFiveDigit() {

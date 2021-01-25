@@ -39,6 +39,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference mDatabase = database.getReference();
     private SharedPreferences sharedPref;
+    private String userInviteId;
     private String userUniqueId;
 
     @Override
@@ -58,6 +59,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
 
         Log.d(DEBUG_TAG, "---------START SERVICE");
 
+        userInviteId = getInviteUserId();
         userUniqueId = getUserUniqueId();
 
         sensorList.add("ACCELEROMETER");
@@ -103,7 +105,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         // grab the values and timestamp -- off the main thread
-        new MotionSensorEventLoggerTask(userUniqueId).execute(sensorEvent);
+        new MotionSensorEventLoggerTask(userInviteId).execute(sensorEvent);
     }
 
     @Override
@@ -140,6 +142,10 @@ public class MotionLoggerService extends Service implements SensorEventListener 
             }
         });
 
+    }
+
+    public String getInviteUserId() {
+        return sharedPref.getString(getString(R.string.invitation_user_id), "nodata");
     }
 
     public String getUserUniqueId() {

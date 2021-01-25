@@ -115,13 +115,13 @@ public class WebViewIGActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-//        stopMotionLoggerService();
+        stopMotionLoggerService();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        stopMotionLoggerService();
+        stopMotionLoggerService();
     }
 
 
@@ -136,7 +136,7 @@ public class WebViewIGActivity extends AppCompatActivity {
         if (granted) {
 
             Log.d(DEBUG_TAG, " ...... !!!!! ....");
-//            startMotionLoggerService();
+            startMotionLoggerService();
 
         }
         else {
