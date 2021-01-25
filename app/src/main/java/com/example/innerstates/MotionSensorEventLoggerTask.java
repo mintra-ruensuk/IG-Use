@@ -39,32 +39,29 @@ public class MotionSensorEventLoggerTask extends AsyncTask<SensorEvent, Void, Vo
         // log the value
         switch (sensorType) {
             case Sensor.TYPE_ACCELEROMETER:
-//                String valueAccel = event.values[0] + ", " + event.values[1] + ", " + event.values[2];
-//                Log.d(DEBUG_TAG, "ACCEL____ " + valueAccel);
-//                new SensorXYZ(event, userUniqueId, "ACCELEROMETER").pushToServer();
-                new SensorAccel(event, userInviteId, "ACCELEROMETER");
+                new SensorACCELEROMETER(event, userInviteId, "ACCELEROMETER");
 
                 break;
-//            case Sensor.TYPE_GYROSCOPE:
-//                new SensorXYZ(event, userUniqueId, "GYROSCOPE").pushToServer();
-//                break;
-//            case Sensor.TYPE_GRAVITY:
-//                new SensorXYZ(event, userUniqueId, "GRAVITY").pushToServer();
-//                break;
-//            case Sensor.TYPE_LINEAR_ACCELERATION:
-//                new SensorXYZ(event, userUniqueId, "LINEAR_ACCEL").pushToServer();
-//                break;
+            case Sensor.TYPE_GYROSCOPE:
+                new SensorGYROSCOPE(event, userInviteId, "GYROSCOPE");
+                break;
+            case Sensor.TYPE_GRAVITY:
+                new SensorGRAVITY(event, userInviteId, "GRAVITY");
+                break;
+            case Sensor.TYPE_LINEAR_ACCELERATION:
+                new SensorLINEAR_ACCELERATION(event, userInviteId, "LINEAR_ACCELERATION");
+                break;
 //            case Sensor.TYPE_LIGHT:
-//                new SensorOneValue(event, userUniqueId, "LIGHT").pushToServer();
+//                new SensorOneValue(event, userInviteId, "LIGHT").pushToServer();
 //                break;
-//            case Sensor.TYPE_ROTATION_VECTOR:
-//                new SensorXYZ(event, userUniqueId, "ROTATION_VECTOR").pushToServer();
-//                break;
-//            case Sensor.TYPE_MAGNETIC_FIELD:
-//                new SensorXYZ(event, userUniqueId, "MAGNETIC_FIELD").pushToServer();
-//                break;
+            case Sensor.TYPE_ROTATION_VECTOR:
+                new SensorROTATION_VECTOR(event, userInviteId, "ROTATION_VECTOR");
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                new SensorMAGNETIC_FIELD(event, userInviteId, "MAGNETIC_FIELD");
+                break;
 //            case Sensor.TYPE_PROXIMITY:
-//                new SensorOneValue(event, userUniqueId, "PROXIMITY").pushToServer();
+//                new SensorOneValue(event, userInviteId, "PROXIMITY").pushToServer();
 //                break;
 
         }
@@ -110,10 +107,15 @@ class SensorXYZ {
         return result;
     }
     public void pushToServer(ArrayList<SensorXYZ> arrayList) {
+        Log.d("pushToServer -- ", childName);
         if (!childName.equals("")) {
+            Map<String, Object> childUpdates = new HashMap<>();
             for( SensorXYZ obj : arrayList) {
-                mDatabase.child("sensors").child(childName).push().setValue(obj.toMap());
+//                mDatabase.child("sensors").child(childName).push().setValue(obj.toMap());
+                String key = mDatabase.child("sensors").child(childName).push().getKey();
+                childUpdates.put(key, obj.toMap());
             }
+            mDatabase.child("sensors").child(childName).updateChildren(childUpdates);
 
         }
     }
@@ -123,10 +125,11 @@ class SensorXYZ {
         Log.d("SensorXYZ", "x = " + x + " time " + string);
     }
 }
-class SensorAccel extends SensorXYZ {
+
+class SensorACCELEROMETER extends SensorXYZ {
     private static ArrayList<SensorXYZ> oneSecList = new ArrayList<>();
     private static long currentSec = 0;
-    public SensorAccel(SensorEvent event, String userId, String sensorChild) {
+    public SensorACCELEROMETER(SensorEvent event, String userId, String sensorChild) {
         super(event, userId, sensorChild);
         long dataSec = super.timeStamp / 1000L;
         if (dataSec == currentSec) {
@@ -146,6 +149,127 @@ class SensorAccel extends SensorXYZ {
     }
 
 }
+
+class SensorGYROSCOPE extends SensorXYZ {
+    private static ArrayList<SensorXYZ> oneSecList = new ArrayList<>();
+    private static long currentSec = 0;
+    public SensorGYROSCOPE(SensorEvent event, String userId, String sensorChild) {
+        super(event, userId, sensorChild);
+        long dataSec = super.timeStamp / 1000L;
+        if (dataSec == currentSec) {
+            oneSecList.add(this);
+        }else if (dataSec != currentSec) {
+            if (oneSecList.size() > 60) {
+                int removeItem = oneSecList.size() - 60;
+                for (int i = 1 ; i <= removeItem ; i++) {
+                    oneSecList.remove(new Random().nextInt(oneSecList.size()));
+                }
+            }
+            Log.d("SensorGYROSCOPE", " --------" + oneSecList.size());
+            super.pushToServer(oneSecList);
+            currentSec = dataSec;
+            oneSecList.clear();
+        }
+    }
+
+}
+
+class SensorGRAVITY extends SensorXYZ {
+    private static ArrayList<SensorXYZ> oneSecList = new ArrayList<>();
+    private static long currentSec = 0;
+    public SensorGRAVITY(SensorEvent event, String userId, String sensorChild) {
+        super(event, userId, sensorChild);
+        long dataSec = super.timeStamp / 1000L;
+        if (dataSec == currentSec) {
+            oneSecList.add(this);
+        }else if (dataSec != currentSec) {
+            if (oneSecList.size() > 60) {
+                int removeItem = oneSecList.size() - 60;
+                for (int i = 1 ; i <= removeItem ; i++) {
+                    oneSecList.remove(new Random().nextInt(oneSecList.size()));
+                }
+            }
+            Log.d("GRAVITY", " --------" + oneSecList.size());
+            super.pushToServer(oneSecList);
+            currentSec = dataSec;
+            oneSecList.clear();
+        }
+    }
+
+}
+
+class SensorLINEAR_ACCELERATION extends SensorXYZ {
+    private static ArrayList<SensorXYZ> oneSecList = new ArrayList<>();
+    private static long currentSec = 0;
+    public SensorLINEAR_ACCELERATION(SensorEvent event, String userId, String sensorChild) {
+        super(event, userId, sensorChild);
+        long dataSec = super.timeStamp / 1000L;
+        if (dataSec == currentSec) {
+            oneSecList.add(this);
+        }else if (dataSec != currentSec) {
+            if (oneSecList.size() > 60) {
+                int removeItem = oneSecList.size() - 60;
+                for (int i = 1 ; i <= removeItem ; i++) {
+                    oneSecList.remove(new Random().nextInt(oneSecList.size()));
+                }
+            }
+            Log.d("SensorLINEAR_ACCEL", " --------" + oneSecList.size());
+            super.pushToServer(oneSecList);
+            currentSec = dataSec;
+            oneSecList.clear();
+        }
+    }
+
+}
+
+class SensorROTATION_VECTOR extends SensorXYZ {
+    private static ArrayList<SensorXYZ> oneSecList = new ArrayList<>();
+    private static long currentSec = 0;
+    public SensorROTATION_VECTOR(SensorEvent event, String userId, String sensorChild) {
+        super(event, userId, sensorChild);
+        long dataSec = super.timeStamp / 1000L;
+        if (dataSec == currentSec) {
+            oneSecList.add(this);
+        }else if (dataSec != currentSec) {
+            if (oneSecList.size() > 60) {
+                int removeItem = oneSecList.size() - 60;
+                for (int i = 1 ; i <= removeItem ; i++) {
+                    oneSecList.remove(new Random().nextInt(oneSecList.size()));
+                }
+            }
+            Log.d("SensorROTATION", " --------" + oneSecList.size());
+            super.pushToServer(oneSecList);
+            currentSec = dataSec;
+            oneSecList.clear();
+        }
+    }
+
+}
+
+class SensorMAGNETIC_FIELD extends SensorXYZ {
+    private static ArrayList<SensorXYZ> oneSecList = new ArrayList<>();
+    private static long currentSec = 0;
+    public SensorMAGNETIC_FIELD(SensorEvent event, String userId, String sensorChild) {
+        super(event, userId, sensorChild);
+        long dataSec = super.timeStamp / 1000L;
+        if (dataSec == currentSec) {
+            oneSecList.add(this);
+        }else if (dataSec != currentSec) {
+            if (oneSecList.size() > 60) {
+                int removeItem = oneSecList.size() - 60;
+                for (int i = 1 ; i <= removeItem ; i++) {
+                    oneSecList.remove(new Random().nextInt(oneSecList.size()));
+                }
+            }
+            Log.d("SensorMAGNETIC_FIELD", " --------" + oneSecList.size());
+            super.pushToServer(oneSecList);
+            currentSec = dataSec;
+            oneSecList.clear();
+        }
+    }
+
+}
+
 class SensorOneValue {
     private double value;
     private long timeStamp;
@@ -186,9 +310,3 @@ class SensorOneValue {
     }
 }
 
-class SensorACCELEROMETER extends SensorXYZ {
-
-    public SensorACCELEROMETER(SensorEvent event, String userId, String sensorChild) {
-        super(event, userId, sensorChild);
-    }
-}
