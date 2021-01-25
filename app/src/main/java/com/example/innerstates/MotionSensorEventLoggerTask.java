@@ -51,18 +51,18 @@ public class MotionSensorEventLoggerTask extends AsyncTask<SensorEvent, Void, Vo
             case Sensor.TYPE_LINEAR_ACCELERATION:
                 new SensorLINEAR_ACCELERATION(event, userInviteId, "LINEAR_ACCELERATION");
                 break;
-//            case Sensor.TYPE_LIGHT:
-//                new SensorOneValue(event, userInviteId, "LIGHT").pushToServer();
-//                break;
+            case Sensor.TYPE_LIGHT:
+                new SensorLIGHT(event, userInviteId, "LIGHT");
+                break;
             case Sensor.TYPE_ROTATION_VECTOR:
                 new SensorROTATION_VECTOR(event, userInviteId, "ROTATION_VECTOR");
                 break;
             case Sensor.TYPE_MAGNETIC_FIELD:
                 new SensorMAGNETIC_FIELD(event, userInviteId, "MAGNETIC_FIELD");
                 break;
-//            case Sensor.TYPE_PROXIMITY:
-//                new SensorOneValue(event, userInviteId, "PROXIMITY").pushToServer();
-//                break;
+            case Sensor.TYPE_PROXIMITY:
+                new SensorPROXIMITY(event, userInviteId, "PROXIMITY");
+                break;
 
         }
         return null;
@@ -271,26 +271,22 @@ class SensorMAGNETIC_FIELD extends SensorXYZ {
 }
 
 class SensorOneValue {
-    private double value;
-    private long timeStamp;
-    private String userId;
-    private static long lastTimeStamp = 0;
-    private String sensorChild = "";
+    public double value;
+    public long timeStamp;
+    public String userId;
+    public String childName = "";
 
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference mDatabase = database.getReference();
 
-    public SensorOneValue(SensorEvent event, String userId, String sensorChild){
+    public SensorOneValue(SensorEvent event, String userId, String childName){
         if (event.values.length > 0) {
             this.timeStamp = MyUtil.getCurrentTime();
-//            if (timeStamp > lastTimeStamp) {
                 this.value = event.values[0];
                 this.timeStamp = MyUtil.getCurrentTime();
                 this.userId = userId;
-//                lastTimeStamp = timeStamp;
-                this.sensorChild = sensorChild;
-//            }
+                this.childName = childName;
         }
 
     }
@@ -303,9 +299,61 @@ class SensorOneValue {
 
         return result;
     }
-    public void pushToServer() {
-        if (!sensorChild.equals("")) {
-            mDatabase.child("sensors").child(sensorChild).push().setValue(this.toMap());
+    public void pushToServer(ArrayList<SensorOneValue> arrayList) {
+        if (!childName.equals("")) {
+            Map<String, Object> childUpdates = new HashMap<>();
+            for( SensorOneValue obj : arrayList) {
+                String key = mDatabase.child("sensors").child(childName).push().getKey();
+                childUpdates.put(key, obj.toMap());
+            }
+            mDatabase.child("sensors").child(childName).updateChildren(childUpdates);
+
+        }
+    }
+}
+class SensorLIGHT extends SensorOneValue {
+    private static ArrayList<SensorOneValue> oneSecList = new ArrayList<>();
+    private static long currentSec = 0;
+
+    public SensorLIGHT(SensorEvent event, String userId, String childName) {
+        super(event, userId, childName);
+        long dataSec = super.timeStamp / 1000L;
+        if (dataSec == currentSec) {
+            oneSecList.add(this);
+        }else if (dataSec != currentSec) {
+            if (oneSecList.size() > 60) {
+                int removeItem = oneSecList.size() - 60;
+                for (int i = 1 ; i <= removeItem ; i++) {
+                    oneSecList.remove(new Random().nextInt(oneSecList.size()));
+                }
+            }
+            Log.d("SensorLIGHT", " --------" + oneSecList.size());
+            super.pushToServer(oneSecList);
+            currentSec = dataSec;
+            oneSecList.clear();
+        }
+    }
+}
+class SensorPROXIMITY extends SensorOneValue {
+    private static ArrayList<SensorOneValue> oneSecList = new ArrayList<>();
+    private static long currentSec = 0;
+
+    public SensorPROXIMITY(SensorEvent event, String userId, String childName) {
+        super(event, userId, childName);
+        long dataSec = super.timeStamp / 1000L;
+        if (dataSec == currentSec) {
+            oneSecList.add(this);
+        }else if (dataSec != currentSec) {
+            if (oneSecList.size() > 60) {
+                int removeItem = oneSecList.size() - 60;
+                for (int i = 1 ; i <= removeItem ; i++) {
+                    oneSecList.remove(new Random().nextInt(oneSecList.size()));
+                }
+            }
+            Log.d("PROXIMITY", " --------" + oneSecList.size());
+            super.pushToServer(oneSecList);
+            currentSec = dataSec;
+            oneSecList.clear();
         }
     }
 }
