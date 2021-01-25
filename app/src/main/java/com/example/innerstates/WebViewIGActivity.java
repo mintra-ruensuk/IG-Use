@@ -24,6 +24,11 @@ import android.webkit.WebViewClient;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class WebViewIGActivity extends AppCompatActivity {
@@ -38,6 +43,8 @@ public class WebViewIGActivity extends AppCompatActivity {
     private float oldX = 0;
     private float oldY = 0;
     private long timerTime = 0;
+    private ArrayList<Double> touchSize = new ArrayList<>();
+    private ArrayList<Double> touchPressure = new ArrayList<>();
 
     private VelocityTracker mVelocityTracker = null;
 
@@ -83,16 +90,18 @@ public class WebViewIGActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 int index = event.getActionIndex();
                 int action = event.getAction();
-                int pointerId = event.getPointerId(index);
 
                 switch(action) {
                     case MotionEvent.ACTION_DOWN:
                         oldX = event.getX();
                         oldY = event.getY();
                         timerTime = MyUtil.getCurrentTime();
+                        touchSize.add(new Double(event.getSize()));
+                        touchPressure.add(new Double(event.getPressure()));
                         break;
                     case MotionEvent.ACTION_MOVE:
-
+                        touchSize.add(new Double(event.getSize()));
+                        touchPressure.add(new Double(event.getPressure()));
                         break;
                     case MotionEvent.ACTION_UP:
                         float newX = event.getX();
@@ -101,19 +110,60 @@ public class WebViewIGActivity extends AppCompatActivity {
 
                         double distance = Math.sqrt((newX-oldX) * (newX-oldX) + (newY-oldY) * (newY-oldY));
                         double speed = distance / timeDiff;
-                        Log.d(DEBUG_TAG, "distance = " + distance + " .... speed = " + speed);
+//                        Log.d(DEBUG_TAG, "distance = " + distance + " .... speed = " + speed);
+                        touchSize.add(new Double(event.getSize()));
+                        touchPressure.add(new Double(event.getPressure()));
+
+                        calStat();
+
 
                     case MotionEvent.ACTION_CANCEL:
 
                         break;
                 }
-                //Log.d(DEBUG_TAG, "x = " + event.getX() + ", y = " +event.getY() + ", size = " + event.getSize());
+//                Log.d(DEBUG_TAG, "x = " + event.getX() + ", y = " +event.getY() + ", size = " + event.getSize());
                 return false;
             }
         });
         // URL laden:
         webView.loadUrl("https://instagram.com");
         setContentView(webView);
+    }
+
+    public void calStat() {
+        // min, max, mean, sd, median var
+        DecimalFormat df = new DecimalFormat("#.#####");
+        df.setRoundingMode(RoundingMode.CEILING);
+
+        double[] touchSizeResult = getMinMaxETC(touchSize);
+        double[] touchPressureResult = getMinMaxETC(touchPressure);
+
+
+        Log.d(DEBUG_TAG, "SIZE min=" + df.format(touchSizeResult[0]) + " max=" +df.format(touchSizeResult[1]) + " mean="+df.format(touchSizeResult[2]) + " median=" + df.format(touchSizeResult[3]) + " std="+ df.format(touchSizeResult[4]) + " var="+ df.format(touchSizeResult[5]));
+
+        Log.d(DEBUG_TAG, "PRES min=" + df.format(touchPressureResult[0]) + " max=" +df.format(touchPressureResult[1]) + " mean="+df.format(touchPressureResult[2]) + " median=" + df.format(touchPressureResult[3]) + " std="+ df.format(touchPressureResult[4]) + " var="+ df.format(touchPressureResult[5]));
+
+        touchSize.clear();
+        touchPressure.clear();
+
+    }
+
+    public double[] getMinMaxETC(ArrayList<Double> list) {
+        double data[] = new double[touchSize.size()];
+        int i = 0;
+        for (Double d: touchSize) data[i++] = d;
+
+
+        double min = Collections.min(touchSize);
+        double max = Collections.max(touchSize);
+        double mean = MyUtil.calculateAverage(touchSize);
+        double median = MyUtil.getMedianFromArray(data);
+        double std = MyUtil.calculateStandardDeviation(data);
+        double var = MyUtil.getVariance(data);
+
+        double[] result = {min, max, mean, median, std, var};
+        return result;
+
     }
 
 
