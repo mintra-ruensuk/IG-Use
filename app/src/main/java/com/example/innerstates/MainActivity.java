@@ -12,16 +12,20 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.provider.Settings.Secure;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.provider.Settings.Secure;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sharedPref;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference mDatabase = database.getReference();
+    private String userUniqueId;
 
     Intent mServiceIntent;
     private MainService mMainService;
@@ -48,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         sharedPref = mContext.getSharedPreferences(
                 getString(R.string.preference_file_key), Context.MODE_PRIVATE);
 
+        userUniqueId = Secure.getString(this.getContentResolver(),
+                Secure.ANDROID_ID);
 
         checkInviteCode();
 
@@ -214,18 +221,20 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     if (editText.getText().length() == 6) {
+
                         String code = editText.getText().toString();
                         SharedPreferences.Editor editor = sharedPref.edit();
                         editor.putString(getString(R.string.invitation_user_id), code);
                         editor.apply();
+
+                        writeNewUser();
 
                         editText.setVisibility(View.GONE);
                         button.setVisibility(View.GONE);
 
 
 
-                        String childName = "/users/" + userUniqueId;
-                        mDatabase.child(childName).child("inviteUserId").setValue(code);
+
 
 
                         Toast.makeText(getApplicationContext(),"Thank you for registration!",Toast.LENGTH_LONG).show();
@@ -240,6 +249,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void writeNewUser() {
+        final User user = new User(userUniqueId, getInviteUserId());
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (!snapshot.child("users").hasChild(userUniqueId)) {
+
+                    mDatabase.child("users").child(userUniqueId).setValue(user);
+                    mDatabase.child("users").child(userUniqueId).child("inviteUserId").setValue(getInviteUserId());
+
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString(getString(R.string.user_unique_id), userUniqueId);
+                    editor.apply();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
+
     public String getInviteUserId() {
         return sharedPref.getString(getString(R.string.invitation_user_id), "nodata");
     }
@@ -248,19 +281,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startMotionLoggerService() {
-        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
-            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
-            startService(new Intent(getBaseContext(), MotionLoggerService.class));
-        }else {
-            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
-        }
+//        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+//            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
+//            startService(new Intent(getBaseContext(), MotionLoggerService.class));
+//        }else {
+//            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
+//        }
     }
 
     public void  stopMotionLoggerService() {
-        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
-            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
-            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
-        }
+//        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+//            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
+//            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
+//        }
     }
 
 

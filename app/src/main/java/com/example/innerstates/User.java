@@ -1,5 +1,6 @@
 package com.example.innerstates;
 
+import android.content.res.Resources;
 import android.os.Build;
 
 import com.google.firebase.database.IgnoreExtraProperties;
@@ -19,6 +20,8 @@ public class User {
     public String product;
     public String deviceName;
     public String inviteUserId;
+    public int screenWidth;
+    public int screenHeight;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
@@ -35,6 +38,9 @@ public class User {
         this.deviceName = getDeviceName();
         this.createdUnixTime = System.currentTimeMillis() / 1000L;
         this.inviteUserId = inviteUserId;
+
+        this.screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+        this.screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
     }
 

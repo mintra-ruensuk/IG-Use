@@ -1,7 +1,6 @@
 package com.example.innerstates;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
@@ -14,7 +13,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.VelocityTracker;
+import android.view.View;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -34,6 +35,9 @@ public class WebViewIGActivity extends AppCompatActivity {
     private static final String DEBUG_TAG = "WebViewIGActivity";
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference mDatabase = database.getReference();
+    private float oldX = 0;
+    private float oldY = 0;
+    private long timerTime = 0;
 
     private VelocityTracker mVelocityTracker = null;
 
@@ -49,14 +53,13 @@ public class WebViewIGActivity extends AppCompatActivity {
 //        mDatabase.child("users").removeValue();
 //        mDatabase.child("sensors").removeValue();
 
-
         mContext = this.getBaseContext();
         webView  = new WebView(this);
 
         webView.getSettings().setJavaScriptEnabled(true); // enable javascript
 
-        final Activity activity = this;
-
+//        final Activity activity = this;
+//
         webView.setWebViewClient(new WebViewClient() {
 
             @TargetApi(android.os.Build.VERSION_CODES.M)
@@ -74,33 +77,42 @@ public class WebViewIGActivity extends AppCompatActivity {
             }
         });
 
-//        webView.loadUrl("https://www.google.com");
-        webView.loadUrl("https://www.instagram.com");
 
-//        webView.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View view, MotionEvent event) {
-//                int index = event.getActionIndex();
-//                int action = event.getActionMasked();
-//                int pointerId = event.getPointerId(index);
-//
-//                switch(action) {
-//                    case MotionEvent.ACTION_DOWN:
-//
-//                        break;
-//                    case MotionEvent.ACTION_MOVE:
-//
-//                        break;
-//                    case MotionEvent.ACTION_UP:
-//                    case MotionEvent.ACTION_CANCEL:
-//
-//                        break;
-//                }
-//                Log.d(DEBUG_TAG, "x = " + event.getX() + ", y = " +event.getY() + ", size = " + event.getSize());
-//                return true;
-//            }
-//        });
+        webView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                int index = event.getActionIndex();
+                int action = event.getAction();
+                int pointerId = event.getPointerId(index);
 
+                switch(action) {
+                    case MotionEvent.ACTION_DOWN:
+                        oldX = event.getX();
+                        oldY = event.getY();
+                        timerTime = MyUtil.getCurrentTime();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        float newX = event.getX();
+                        float newY = event.getY();
+                        long timeDiff = (MyUtil.getCurrentTime() - timerTime);
+
+                        double distance = Math.sqrt((newX-oldX) * (newX-oldX) + (newY-oldY) * (newY-oldY));
+                        double speed = distance / timeDiff;
+                        Log.d(DEBUG_TAG, "distance = " + distance + " .... speed = " + speed);
+
+                    case MotionEvent.ACTION_CANCEL:
+
+                        break;
+                }
+                //Log.d(DEBUG_TAG, "x = " + event.getX() + ", y = " +event.getY() + ", size = " + event.getSize());
+                return false;
+            }
+        });
+        // URL laden:
+        webView.loadUrl("https://instagram.com");
         setContentView(webView);
     }
 
@@ -226,19 +238,19 @@ public class WebViewIGActivity extends AppCompatActivity {
     }
 
     public void startMotionLoggerService() {
-        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
-            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
-            startService(new Intent(getBaseContext(), MotionLoggerService.class));
-        }else {
-            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
-        }
+//        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+//            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
+//            startService(new Intent(getBaseContext(), MotionLoggerService.class));
+//        }else {
+//            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
+//        }
     }
 
     public void  stopMotionLoggerService() {
-        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
-            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
-            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
-        }
+//        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+//            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
+//            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
+//        }
     }
 
 
