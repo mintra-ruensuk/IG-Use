@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -45,8 +44,13 @@ public class WebViewIGActivity extends AppCompatActivity {
     private long timerTime = 0;
     private ArrayList<Double> touchSize = new ArrayList<>();
     private ArrayList<Double> touchPressure = new ArrayList<>();
+    private double speed;
+    private double distance;
+    private double durationSinceLastPressed;
+    private double holdTime;
+    private long lastPressed = 0;
+    private String userInviteId;
 
-    private VelocityTracker mVelocityTracker = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,12 @@ public class WebViewIGActivity extends AppCompatActivity {
 
         mContext = this.getBaseContext();
         webView  = new WebView(this);
+
+        sharedPref = getSharedPreferences(getString(R.string.preference_file_key),
+                MODE_PRIVATE);
+
+        userInviteId = getInviteUserId();
+
 
         webView.getSettings().setJavaScriptEnabled(true); // enable javascript
 
@@ -98,6 +108,9 @@ public class WebViewIGActivity extends AppCompatActivity {
                         timerTime = MyUtil.getCurrentTime();
                         touchSize.add(new Double(event.getSize()));
                         touchPressure.add(new Double(event.getPressure()));
+                        if(lastPressed > 0) {
+                            durationSinceLastPressed = timerTime - lastPressed;
+                        }
                         break;
                     case MotionEvent.ACTION_MOVE:
                         touchSize.add(new Double(event.getSize()));
@@ -106,16 +119,18 @@ public class WebViewIGActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_UP:
                         float newX = event.getX();
                         float newY = event.getY();
-                        long timeDiff = (MyUtil.getCurrentTime() - timerTime);
+                        long timeNow = MyUtil.getCurrentTime();
+                        long timeDiff = (timeNow - timerTime);
 
-                        double distance = Math.sqrt((newX-oldX) * (newX-oldX) + (newY-oldY) * (newY-oldY));
-                        double speed = distance / timeDiff;
-//                        Log.d(DEBUG_TAG, "distance = " + distance + " .... speed = " + speed);
+                        holdTime = timeDiff;
+
+                        distance = Math.sqrt((newX-oldX) * (newX-oldX) + (newY-oldY) * (newY-oldY));
+                        speed = distance / timeDiff;
                         touchSize.add(new Double(event.getSize()));
                         touchPressure.add(new Double(event.getPressure()));
 
                         calStat();
-
+                        lastPressed = timeNow;
 
                     case MotionEvent.ACTION_CANCEL:
 
@@ -132,16 +147,20 @@ public class WebViewIGActivity extends AppCompatActivity {
 
     public void calStat() {
         // min, max, mean, sd, median var
-        DecimalFormat df = new DecimalFormat("#.#####");
+        DecimalFormat df = new DecimalFormat("#.#########");
         df.setRoundingMode(RoundingMode.CEILING);
 
         double[] touchSizeResult = getMinMaxETC(touchSize);
         double[] touchPressureResult = getMinMaxETC(touchPressure);
 
 
-        Log.d(DEBUG_TAG, "SIZE min=" + df.format(touchSizeResult[0]) + " max=" +df.format(touchSizeResult[1]) + " mean="+df.format(touchSizeResult[2]) + " median=" + df.format(touchSizeResult[3]) + " std="+ df.format(touchSizeResult[4]) + " var="+ df.format(touchSizeResult[5]));
+//        Log.d(DEBUG_TAG, "SIZE min=" + df.format(touchSizeResult[0]) + " max=" +df.format(touchSizeResult[1]) + " mean="+df.format(touchSizeResult[2]) + " median=" + df.format(touchSizeResult[3]) + " std="+ df.format(touchSizeResult[4]) + " var="+ df.format(touchSizeResult[5]));
+//
+//        Log.d(DEBUG_TAG, "PRES min=" + df.format(touchPressureResult[0]) + " max=" +df.format(touchPressureResult[1]) + " mean="+df.format(touchPressureResult[2]) + " median=" + df.format(touchPressureResult[3]) + " std="+ df.format(touchPressureResult[4]) + " var="+ df.format(touchPressureResult[5]));
 
-        Log.d(DEBUG_TAG, "PRES min=" + df.format(touchPressureResult[0]) + " max=" +df.format(touchPressureResult[1]) + " mean="+df.format(touchPressureResult[2]) + " median=" + df.format(touchPressureResult[3]) + " std="+ df.format(touchPressureResult[4]) + " var="+ df.format(touchPressureResult[5]));
+        TouchData touchData = new TouchData(touchSizeResult, touchPressureResult, durationSinceLastPressed, holdTime, distance, speed, userInviteId);
+
+        mDatabase.child("sensors_extra").child("TOUCH").push().setValue(touchData.toMap());
 
         touchSize.clear();
         touchPressure.clear();
