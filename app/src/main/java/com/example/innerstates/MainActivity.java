@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -98,10 +97,11 @@ public class MainActivity extends AppCompatActivity {
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-        if (rc == PackageManager.PERMISSION_GRANTED) {
 
-        } else {
+        if (rc != PackageManager.PERMISSION_GRANTED) {
             requestCameraPermission();
+        }else if (!granted) {
+            showDialog(this);
         }
         if (granted && rc == PackageManager.PERMISSION_GRANTED) {
 //            headMessage.setText("You're in the study!");
@@ -136,9 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
         else {
-//            headMessage.setText("Your permission is required.");
-//            subMessage.setText("To participate in this study, you must turn on usage data access in your settings. \n\nOn most devices, this is found under: Settings > Security > Usage data access ");
-            showDialog(this);
+
+
         }
     }
     public static boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
@@ -153,17 +152,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
-    private void checkDrawOverlayPermission() {
-        /** check if we already  have permission to draw over other apps */
-        if (!Settings.canDrawOverlays(this)) {
-            /** if not construct intent to request permission */
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            /** request permission via start activity for result */
-            startActivityForResult(intent, REQUEST_CODE);
-        }
-    }
+
 
     private void showDialog(Context context) {
         // 1. Instantiate an AlertDialog.Builder with its constructor

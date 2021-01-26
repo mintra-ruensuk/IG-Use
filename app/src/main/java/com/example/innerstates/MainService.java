@@ -109,21 +109,21 @@ public class MainService extends Service {
 
                     // IF 1.5 hours has passed... then do this:
                     if (sample.getStatus() == Sample.READY
-                            && isInstagramOnForeground(packageName)) {
+                            && isOurAppOnForeground(packageName)) {
                         sample.setStatus(Sample.IG_OPENED);
-                        igOpenTime = MyUtil.getCurrentTime();
+                        igOpenTime = MyUtil.getCurrentTime1000();
 
                     }
                     if (sample.getStatus() == Sample.IG_OPENED
-                            && !isInstagramOnForeground(packageName)) {
+                            && !isOurAppOnForeground(packageName)) {
 
                         // Use IG at least 15 seconds
-                        if(MyUtil.getCurrentTime() >= (igOpenTime + 13)) {
+                        if(MyUtil.getCurrentTime1000() >= (igOpenTime + 13)) {
                             sample.setStatus(Sample.POPUP);
 
 
                             notifyHowYouFeel();
-                            notifyTime = MyUtil.getCurrentTime();
+                            notifyTime = MyUtil.getCurrentTime1000();
 
                         }else {
                             sample.setStatus(Sample.READY);
@@ -135,7 +135,7 @@ public class MainService extends Service {
                     }
                     if (sample.getStatus() == Sample.POPUP) {
                         // 5 minutes = 300seconds
-                        if(MyUtil.getCurrentTime() >= (notifyTime + 300)) {
+                        if(MyUtil.getCurrentTime1000() >= (notifyTime + 300)) {
                             cancelNotification(instance, notificationId);
                             recordCancelNotification(notificationId);
 
@@ -144,14 +144,12 @@ public class MainService extends Service {
                     }
                     if (sample.getStatus() == Sample.WAIT_FOR_NEXT_POPUP) {
                         //wait for 1.5 hours and then set ready state
-                        if(MyUtil.getCurrentTime() >= (startWaitNextNotificationTime + (90 * 60))) {
+                        if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (90 * 60))) {
                             sample.setStatus(Sample.READY);
                         }
                     }
 
                     lastForegroundApp = packageName;
-
-
 
                 }
 
@@ -362,6 +360,12 @@ public class MainService extends Service {
     }
     public boolean isInstagramOnForeground(String packageName) {
         if(packageName.toLowerCase().contains("instagram")) {
+            return true;
+        }
+        return false;
+    }
+    public boolean isOurAppOnForeground(String packageName) {
+        if(packageName.equals(appPackageName)) {
             return true;
         }
         return false;

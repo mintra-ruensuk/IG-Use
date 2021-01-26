@@ -238,7 +238,9 @@ public class WebViewIGActivity extends AppCompatActivity {
                     android.os.Process.myUid(), mContext.getPackageName());
         }
         boolean granted = mode == AppOpsManager.MODE_ALLOWED;
-        if (granted) {
+        int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+
+        if (granted && rc == AppOpsManager.MODE_ALLOWED) {
 
             Log.d(DEBUG_TAG, " ...... !!!!! ....");
             startMotionLoggerService();
@@ -350,19 +352,19 @@ public class WebViewIGActivity extends AppCompatActivity {
     }
 
     public void startMotionLoggerService() {
-        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
-            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
-            startService(new Intent(getBaseContext(), MotionLoggerService.class));
-        }else {
-            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
-        }
+//        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+//            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
+//            startService(new Intent(getBaseContext(), MotionLoggerService.class));
+//        }else {
+//            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
+//        }
     }
 
     public void  stopMotionLoggerService() {
-        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
-            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
-            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
-        }
+//        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+//            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
+//            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
+//        }
     }
 
     public void createCameraSource() {
@@ -427,7 +429,7 @@ public class WebViewIGActivity extends AppCompatActivity {
             EyeData eyeData = new EyeData(left, right, smile, userInviteId);
 
 
-            mDatabase.child("sensors_extra").child("EYE_TRACKING").push().setValue(eyeData.toMap());
+//            mDatabase.child("sensors_extra").child("EYE_TRACKING").push().setValue(eyeData.toMap());
 
             Log.d("EyesTracker", "onUpdate: Eyes Detected");
 //
