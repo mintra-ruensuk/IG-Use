@@ -36,34 +36,34 @@
             android:taskAffinity=""
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
-<!--        <receiver-->
-<!--            android:name=".SampleBootReceiver"-->
-<!--            android:enabled="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.BOOT_COMPLETED" />-->
-<!--            </intent-filter>-->
-<!--        </receiver> &lt;!&ndash; <service android:name=".ScreenOnOffService" /> &ndash;&gt;-->
-<!--        <receiver-->
-<!--            android:name=".SensorRestarterBroadcastReceiver"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="true"-->
-<!--            android:label="RestartServiceWhenStopped">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="RestartSensor" />-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
+        <receiver
+            android:name=".SampleBootReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver> <!-- <service android:name=".ScreenOnOffService" /> -->
+        <receiver
+            android:name=".SensorRestarterBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="RestartServiceWhenStopped">
+            <intent-filter>
+                <action android:name="RestartSensor" />
+            </intent-filter>
+        </receiver>
         <service
             android:name=".MotionLoggerService"
             android:enabled="true"
             android:exported="true" />
 
-<!--        <service-->
-<!--            android:name=".AppStopped"-->
-<!--            android:stopWithTask="false" />-->
-<!--        <service-->
-<!--            android:name=".MainService"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="true" />-->
+        <service
+            android:name=".AppStopped"
+            android:stopWithTask="false" />
+        <service
+            android:name=".MainService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
     <uses-permission
         android:name="android.permission.AUTHENTICATE_ACCOUNTS"

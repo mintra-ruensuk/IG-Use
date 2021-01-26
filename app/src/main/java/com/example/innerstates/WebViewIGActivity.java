@@ -76,11 +76,14 @@ public class WebViewIGActivity extends AppCompatActivity {
 //        mDatabase.child("users").removeValue();
 //        mDatabase.child("sensors").removeValue();
 
+        sharedPref = getSharedPreferences(getString(R.string.preference_file_key),
+                MODE_PRIVATE);
+
+
         mContext = this.getBaseContext();
         webView  = new WebView(this);
 
-        sharedPref = getSharedPreferences(getString(R.string.preference_file_key),
-                MODE_PRIVATE);
+
 
         userInviteId = getInviteUserId();
 
@@ -347,19 +350,19 @@ public class WebViewIGActivity extends AppCompatActivity {
     }
 
     public void startMotionLoggerService() {
-//        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
-//            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
-//            startService(new Intent(getBaseContext(), MotionLoggerService.class));
-//        }else {
-//            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
-//        }
+        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
+            startService(new Intent(getBaseContext(), MotionLoggerService.class));
+        }else {
+            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
+        }
     }
 
     public void  stopMotionLoggerService() {
-//        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
-//            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
-//            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
-//        }
+        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
+            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
+        }
     }
 
     public void createCameraSource() {
@@ -418,19 +421,29 @@ public class WebViewIGActivity extends AppCompatActivity {
 
         @Override
         public void onUpdate(Detector.Detections<Face> detections, Face face) {
-            if (face.getIsLeftEyeOpenProbability() > THRESHOLD || face.getIsRightEyeOpenProbability() > THRESHOLD) {
-                Log.d("EyesTracker", "onUpdate: Eyes Detected");
-            }
-            else {
+            float left = face.getIsLeftEyeOpenProbability();
+            float right = face.getIsRightEyeOpenProbability();
+            float smile = face.getIsSmilingProbability();
+            EyeData eyeData = new EyeData(left, right, smile, userInviteId);
 
-                Log.d("EyesTracker", "Eyes Detected and closed");
-            }
+
+            mDatabase.child("sensors_extra").child("EYE_TRACKING").push().setValue(eyeData.toMap());
+
+            Log.d("EyesTracker", "onUpdate: Eyes Detected");
+//
+//            if (face.getIsLeftEyeOpenProbability() > THRESHOLD || face.getIsRightEyeOpenProbability() > THRESHOLD) {
+//                Log.d("EyesTracker", "onUpdate: Eyes Detected");
+//            }
+//            else {
+//
+//                Log.d("EyesTracker", "Eyes Detected and closed");
+//            }
         }
 
         @Override
         public void onMissing(Detector.Detections<Face> detections) {
             super.onMissing(detections);
-            Log.d("EyesTracker","Face Not Detected yet!");
+//            Log.d("EyesTracker","Face Not Detected yet!");
         }
 
         @Override

@@ -132,11 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("serviceeeeee------>", "MainService is running!");
             }
 
-            Log.d(DEBUG_TAG, " ...... !!!!! ....");
-            startMotionLoggerService();
 
-            Intent intent = new Intent(this, WebViewIGActivity.class);
-            startActivity(intent);
 
         }
         else {
@@ -234,6 +230,9 @@ public class MainActivity extends AppCompatActivity {
         if (!inviteUserId.equals("nodata")) {
             editText.setVisibility(View.GONE);
             button.setVisibility(View.GONE);
+
+            Intent intent = new Intent(this, WebViewIGActivity.class);
+            startActivity(intent);
         }
 
         if(button.getVisibility() == View.VISIBLE) {
@@ -252,7 +251,8 @@ public class MainActivity extends AppCompatActivity {
                         editText.setVisibility(View.GONE);
                         button.setVisibility(View.GONE);
 
-
+                        Intent intent = new Intent(mContext, WebViewIGActivity.class);
+                        startActivity(intent);
 
 
 
@@ -301,19 +301,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startMotionLoggerService() {
-//        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
-//            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
-//            startService(new Intent(getBaseContext(), MotionLoggerService.class));
-//        }else {
-//            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
-//        }
+        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
+            startService(new Intent(getBaseContext(), MotionLoggerService.class));
+        }else {
+            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
+        }
     }
 
     public void  stopMotionLoggerService() {
-//        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
-//            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
-//            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
-//        }
+        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
+            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
+        }
     }
 
     /**
