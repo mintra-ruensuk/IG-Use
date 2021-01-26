@@ -1,5 +1,6 @@
 package com.example.innerstates;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,15 +22,23 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.MultiProcessor;
+import com.google.android.gms.vision.Tracker;
+import com.google.android.gms.vision.face.Face;
+import com.google.android.gms.vision.face.FaceDetector;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 public class WebViewIGActivity extends AppCompatActivity {
 
@@ -50,6 +60,8 @@ public class WebViewIGActivity extends AppCompatActivity {
     private double holdTime;
     private long lastPressed = 0;
     private String userInviteId;
+
+    CameraSource cameraSource;
 
 
     @Override
@@ -143,6 +155,8 @@ public class WebViewIGActivity extends AppCompatActivity {
         // URL laden:
         webView.loadUrl("https://instagram.com");
         setContentView(webView);
+
+        createCameraSource();
     }
 
     public void calStat() {
@@ -197,12 +211,19 @@ public class WebViewIGActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         stopMotionLoggerService();
+
+        if (cameraSource!=null) {
+            cameraSource.stop();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         stopMotionLoggerService();
+        if (cameraSource!=null) {
+            cameraSource.release();
+        }
     }
 
 
@@ -222,6 +243,25 @@ public class WebViewIGActivity extends AppCompatActivity {
         }
         else {
             showDialog(this);
+        }
+
+        if (cameraSource != null) {
+            try {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                cameraSource.start();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     public static boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
@@ -322,5 +362,87 @@ public class WebViewIGActivity extends AppCompatActivity {
 //        }
     }
 
+    public void createCameraSource() {
+        FaceDetector detector = new FaceDetector.Builder(this)
+                .setTrackingEnabled(true)
+                .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
+                .setMode(FaceDetector.FAST_MODE)
+                .build();
+        detector.setProcessor(new MultiProcessor.Builder(new FaceTrackerFactory()).build());
+
+        cameraSource = new CameraSource.Builder(this, detector)
+                .setRequestedPreviewSize(1024, 768)
+                .setFacing(CameraSource.CAMERA_FACING_FRONT)
+                .setRequestedFps(30.0f)
+                .build();
+
+        try {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            cameraSource.start();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    private class FaceTrackerFactory implements MultiProcessor.Factory<Face> {
+
+        private FaceTrackerFactory() {
+
+        }
+
+        @Override
+        public Tracker<Face> create(Face face) {
+            return new EyesTracker();
+        }
+    }
+
+    private class EyesTracker extends Tracker<Face> {
+
+        private final float THRESHOLD = 0.75f;
+
+        private EyesTracker() {
+            Log.d("EyesTracker", "constructor");
+        }
+
+        @Override
+        public void onUpdate(Detector.Detections<Face> detections, Face face) {
+            if (face.getIsLeftEyeOpenProbability() > THRESHOLD || face.getIsRightEyeOpenProbability() > THRESHOLD) {
+                Log.d("EyesTracker", "onUpdate: Eyes Detected");
+            }
+            else {
+
+                Log.d("EyesTracker", "Eyes Detected and closed");
+            }
+        }
+
+        @Override
+        public void onMissing(Detector.Detections<Face> detections) {
+            super.onMissing(detections);
+            Log.d("EyesTracker","Face Not Detected yet!");
+        }
+
+        @Override
+        public void onDone() {
+            super.onDone();
+        }
+    }
+
 
 }
+
+
+
+
+

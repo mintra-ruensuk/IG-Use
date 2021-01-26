@@ -1,6 +1,8 @@
 package com.example.innerstates;
 
+import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
@@ -8,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,10 +30,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 public class MainActivity extends AppCompatActivity {
 
     public final static int REQUEST_CODE = 5463;
+    private static final int RC_HANDLE_GMS = 9001;
+    // permission request codes need to be < 256
+    private static final int RC_HANDLE_CAMERA_PERM = 2;
 //    final static String CHANNEL_ID = "123456";
     private static final String DEBUG_TAG = "MainActivity";
     private Context mContext;
@@ -87,7 +94,16 @@ public class MainActivity extends AppCompatActivity {
 //            //checkDrawOverlayPermission();
 //            requestUsageStatsPermission();
 //        }
-        if (granted) {
+
+        // Check for the camera permission before accessing the camera.  If the
+        // permission is not granted yet, request permission.
+        int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        if (rc == PackageManager.PERMISSION_GRANTED) {
+
+        } else {
+            requestCameraPermission();
+        }
+        if (granted && rc == PackageManager.PERMISSION_GRANTED) {
 //            headMessage.setText("You're in the study!");
 //            subMessage.setText("This app will prompt you to record your emotions throughout the day. \n\nPlease keep this app running. If it is running, you will see a notice in your notification drawer.");
 
@@ -104,10 +120,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("serviceeeeee------>", "AppStopped is starting...");
                 startService(new Intent(getBaseContext(), AppStopped.class));
             }
-            if (!isMyServiceRunning(ScreenOnOffService.class, this)) {
-                Log.d("serviceeeeee------>", "ScreenOnOffService is starting...");
-                startService(new Intent(getBaseContext(), ScreenOnOffService.class));
-            }
+//            if (!isMyServiceRunning(ScreenOnOffService.class, this)) {
+//                Log.d("serviceeeeee------>", "ScreenOnOffService is starting...");
+//                startService(new Intent(getBaseContext(), ScreenOnOffService.class));
+//            }
 
             if (!isMyServiceRunning(MainService.class, this)) {
                 Log.d("serviceeeeee------>", "MainService is starting...");
@@ -118,6 +134,9 @@ public class MainActivity extends AppCompatActivity {
 
             Log.d(DEBUG_TAG, " ...... !!!!! ....");
             startMotionLoggerService();
+
+            Intent intent = new Intent(this, WebViewIGActivity.class);
+            startActivity(intent);
 
         }
         else {
@@ -159,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.setAction(Settings.ACTION_USAGE_ACCESS_SETTINGS);
                 startActivity(intent);
+//                ASK CAMERA PERMISSION
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -296,6 +316,31 @@ public class MainActivity extends AppCompatActivity {
 //        }
     }
 
+    /**
+     * Handles the requesting of the camera permission.  This includes
+     * showing a "Snackbar" message of why the permission is needed then
+     * sending the request.
+     */
+    private void requestCameraPermission() {
+        Log.w(DEBUG_TAG, "Camera permission is not granted. Requesting permission");
 
+        final String[] permissions = new String[]{Manifest.permission.CAMERA};
+
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.CAMERA)) {
+            ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_CAMERA_PERM);
+            return;
+        }
+
+        final Activity thisActivity = this;
+
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActivityCompat.requestPermissions(thisActivity, permissions,
+                        RC_HANDLE_CAMERA_PERM);
+            }
+        };
+    }
 
 }
