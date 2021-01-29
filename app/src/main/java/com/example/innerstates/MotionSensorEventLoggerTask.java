@@ -131,6 +131,9 @@ class SensorACCELEROMETER extends SensorXYZ {
     private static long currentSec = 0;
     public SensorACCELEROMETER(SensorEvent event, String userId, String sensorChild) {
         super(event, userId, sensorChild);
+
+//        Log.d("SensorAccel", " --------" + super.timeStamp);
+
         long dataSec = super.timeStamp / 1000L;
         if (dataSec == currentSec) {
             oneSecList.add(this);

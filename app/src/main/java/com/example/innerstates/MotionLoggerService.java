@@ -85,7 +85,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
 
         for (MySensor sensor : mSensors.values()) {
             if (sensor.getSensor() != null) {
-                mSensorManager.registerListener(this, sensor.getSensor(), SensorManager.SENSOR_DELAY_NORMAL);
+                mSensorManager.registerListener(this, sensor.getSensor(), SensorManager.SENSOR_DELAY_GAME);
 
 //                mSensorManager.registerListener(this, sensor.getSensor(), 1000000, 1000000);
             }

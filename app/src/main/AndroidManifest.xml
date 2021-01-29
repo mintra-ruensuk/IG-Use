@@ -34,7 +34,8 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:taskAffinity=""
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
 
         <receiver
             android:name=".SampleBootReceiver"

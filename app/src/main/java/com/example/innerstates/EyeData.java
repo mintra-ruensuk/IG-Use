@@ -10,7 +10,7 @@ public class EyeData {
     private float right;
     private float smile;
     private String userId;
-    private long timeStamp;
+    public long timeStamp;
 
     public EyeData(float left, float right, float smile, String userId) {
         this.left = left;

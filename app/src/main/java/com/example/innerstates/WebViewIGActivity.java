@@ -110,75 +110,34 @@ public class WebViewIGActivity extends AppCompatActivity {
         });
 
 
-        webView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                int index = event.getActionIndex();
-                int action = event.getAction();
-
-                switch(action) {
-                    case MotionEvent.ACTION_DOWN:
-                        oldX = event.getX();
-                        oldY = event.getY();
-                        timerTime = MyUtil.getCurrentTime();
-                        touchSize.add(new Double(event.getSize()));
-                        touchPressure.add(new Double(event.getPressure()));
-                        if(lastPressed > 0) {
-                            durationSinceLastPressed = timerTime - lastPressed;
-                        }
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        touchSize.add(new Double(event.getSize()));
-                        touchPressure.add(new Double(event.getPressure()));
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        float newX = event.getX();
-                        float newY = event.getY();
-                        long timeNow = MyUtil.getCurrentTime();
-                        long timeDiff = (timeNow - timerTime);
-
-                        holdTime = timeDiff;
-
-                        distance = Math.sqrt((newX-oldX) * (newX-oldX) + (newY-oldY) * (newY-oldY));
-                        speed = distance / timeDiff;
-                        touchSize.add(new Double(event.getSize()));
-                        touchPressure.add(new Double(event.getPressure()));
-
-                        calStat();
-                        lastPressed = timeNow;
-
-                    case MotionEvent.ACTION_CANCEL:
-
-                        break;
-                }
-//                Log.d(DEBUG_TAG, "x = " + event.getX() + ", y = " +event.getY() + ", size = " + event.getSize());
-                return false;
-            }
-        });
+        attachTouchEvent();
         // URL laden:
         webView.loadUrl("https://instagram.com");
         setContentView(webView);
 
         createCameraSource();
+        refreshMessage();
+
     }
 
     public void calStat() {
-        // min, max, mean, sd, median var
-        DecimalFormat df = new DecimalFormat("#.#########");
-        df.setRoundingMode(RoundingMode.CEILING);
+        if (MainService.sample.getStatus() != Sample.WAIT_FOR_NEXT_POPUP && MainService.sample.getStatus() != Sample.POPUP) {
+            // min, max, mean, sd, median var
+            DecimalFormat df = new DecimalFormat("#.#########");
+            df.setRoundingMode(RoundingMode.CEILING);
 
-        double[] touchSizeResult = getMinMaxETC(touchSize);
-        double[] touchPressureResult = getMinMaxETC(touchPressure);
+            double[] touchSizeResult = getMinMaxETC(touchSize);
+            double[] touchPressureResult = getMinMaxETC(touchPressure);
 
 
 //        Log.d(DEBUG_TAG, "SIZE min=" + df.format(touchSizeResult[0]) + " max=" +df.format(touchSizeResult[1]) + " mean="+df.format(touchSizeResult[2]) + " median=" + df.format(touchSizeResult[3]) + " std="+ df.format(touchSizeResult[4]) + " var="+ df.format(touchSizeResult[5]));
 //
 //        Log.d(DEBUG_TAG, "PRES min=" + df.format(touchPressureResult[0]) + " max=" +df.format(touchPressureResult[1]) + " mean="+df.format(touchPressureResult[2]) + " median=" + df.format(touchPressureResult[3]) + " std="+ df.format(touchPressureResult[4]) + " var="+ df.format(touchPressureResult[5]));
 
-        TouchData touchData = new TouchData(touchSizeResult, touchPressureResult, durationSinceLastPressed, holdTime, distance, speed, userInviteId);
+            TouchData touchData = new TouchData(touchSizeResult, touchPressureResult, durationSinceLastPressed, holdTime, distance, speed, userInviteId);
 
-        mDatabase.child("sensors_extra").child("TOUCH").push().setValue(touchData.toMap());
-
+            mDatabase.child("sensors_extra").child("TOUCH").push().setValue(touchData.toMap());
+        }
         touchSize.clear();
         touchPressure.clear();
 
@@ -206,7 +165,10 @@ public class WebViewIGActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        refreshMessage();
+        if (MainService.sample.getStatus() != Sample.WAIT_FOR_NEXT_POPUP && MainService.sample.getStatus() != Sample.POPUP) {
+            Log.d(DEBUG_TAG, "WHY----!!!!!");
+            refreshMessage();
+        }
         Log.d("onResume---------->", "onResume");
     }
 
@@ -229,7 +191,53 @@ public class WebViewIGActivity extends AppCompatActivity {
         }
     }
 
+    private void attachTouchEvent() {
+        webView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent event) {
+            int index = event.getActionIndex();
+            int action = event.getAction();
 
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    oldX = event.getX();
+                    oldY = event.getY();
+                    timerTime = MyUtil.getCurrentTime();
+                    touchSize.add(new Double(event.getSize()));
+                    touchPressure.add(new Double(event.getPressure()));
+                    if (lastPressed > 0) {
+                        durationSinceLastPressed = timerTime - lastPressed;
+                    }
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    touchSize.add(new Double(event.getSize()));
+                    touchPressure.add(new Double(event.getPressure()));
+                    break;
+                case MotionEvent.ACTION_UP:
+                    float newX = event.getX();
+                    float newY = event.getY();
+                    long timeNow = MyUtil.getCurrentTime();
+                    long timeDiff = (timeNow - timerTime);
+
+                    holdTime = timeDiff;
+
+                    distance = Math.sqrt((newX - oldX) * (newX - oldX) + (newY - oldY) * (newY - oldY));
+                    speed = distance / timeDiff;
+                    touchSize.add(new Double(event.getSize()));
+                    touchPressure.add(new Double(event.getPressure()));
+
+                    calStat();
+                    lastPressed = timeNow;
+
+                case MotionEvent.ACTION_CANCEL:
+
+                    break;
+            }
+//                Log.d(DEBUG_TAG, "x = " + event.getX() + ", y = " +event.getY() + ", size = " + event.getSize());
+            return false;
+        }
+    });
+    }
     private void refreshMessage() {
         AppOpsManager appOps = (AppOpsManager) mContext.getSystemService(Context.APP_OPS_SERVICE);
         int mode = 0;
@@ -244,6 +252,7 @@ public class WebViewIGActivity extends AppCompatActivity {
 
             Log.d(DEBUG_TAG, " ...... !!!!! ....");
             startMotionLoggerService();
+
 
         }
         else {
@@ -358,6 +367,15 @@ public class WebViewIGActivity extends AppCompatActivity {
         }else {
             Log.d("serviceeeeee------>", "MotionLoggerService is running!");
         }
+
+
+        if (!MainActivity.isMyServiceRunning(MainService.class, this)) {
+            Log.d("serviceeeeee------>", "MainService is starting...");
+            startService(new Intent(getBaseContext(), MainService.class));
+        }else {
+            Log.d("serviceeeeee------>", "MainService is running!");
+        }
+
     }
 
     public void  stopMotionLoggerService() {
@@ -381,22 +399,7 @@ public class WebViewIGActivity extends AppCompatActivity {
                 .setRequestedFps(30.0f)
                 .build();
 
-        try {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            cameraSource.start();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
 
