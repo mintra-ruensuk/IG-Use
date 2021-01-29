@@ -50,10 +50,10 @@ public class EnglishQuestion {
     public static String depress3 = "Feeling down, depressed or hopeless";
 
     //
-    public static String body1 = "When I was viewing posts on Instagram, I focus on their (body) appearance";
+    public static String body1 = "When I was viewing posts on Instagram, I focus on their body appearance";
 
     //
-    public static String body2 = "When I was viewing posts on Instagram, I compared their overall (body) appearance to my (body) appearance";
+    public static String body2 = "When I was viewing posts on Instagram, I compared their overall body appearance to my body appearance";
 
     //
     public static String sameText = "How do you feel now?";

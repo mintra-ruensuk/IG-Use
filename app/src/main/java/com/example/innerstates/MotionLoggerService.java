@@ -39,11 +39,14 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference mDatabase = database.getReference();
     private SharedPreferences sharedPref;
+    private String userInviteId;
     private String userUniqueId;
 
     @Override
     public void onCreate() {
         Log.d(DEBUG_TAG, "00000....---->> onCreate MotionLoggerService");
+
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
@@ -56,6 +59,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
 
         Log.d(DEBUG_TAG, "---------START SERVICE");
 
+        userInviteId = getInviteUserId();
         userUniqueId = getUserUniqueId();
 
         sensorList.add("ACCELEROMETER");
@@ -81,7 +85,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
 
         for (MySensor sensor : mSensors.values()) {
             if (sensor.getSensor() != null) {
-                mSensorManager.registerListener(this, sensor.getSensor(), SensorManager.SENSOR_DELAY_NORMAL);
+                mSensorManager.registerListener(this, sensor.getSensor(), SensorManager.SENSOR_DELAY_GAME);
 
 //                mSensorManager.registerListener(this, sensor.getSensor(), 1000000, 1000000);
             }
@@ -101,7 +105,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         // grab the values and timestamp -- off the main thread
-        new MotionSensorEventLoggerTask(userUniqueId).execute(sensorEvent);
+        new MotionSensorEventLoggerTask(userInviteId).execute(sensorEvent);
     }
 
     @Override
@@ -138,6 +142,10 @@ public class MotionLoggerService extends Service implements SensorEventListener 
             }
         });
 
+    }
+
+    public String getInviteUserId() {
+        return sharedPref.getString(getString(R.string.invitation_user_id), "nodata");
     }
 
     public String getUserUniqueId() {
