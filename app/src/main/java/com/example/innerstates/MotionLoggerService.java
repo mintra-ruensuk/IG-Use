@@ -11,17 +11,13 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
@@ -36,8 +32,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     private HashMap<String, MySensor> mSensors = new HashMap<>();
 
     // Write a message to the database
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference mDatabase = database.getReference();
+    FirebaseDatabase database = FirebaseDatabase.getInstance(MyUtil.FIREBASE_URL);
     private SharedPreferences sharedPref;
     private String userInviteId;
     private String userUniqueId;
@@ -105,7 +100,9 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         // grab the values and timestamp -- off the main thread
-        new MotionSensorEventLoggerTask(userInviteId).execute(sensorEvent);
+        if (MainService.sample.getStatus() != Sample.WAIT_FOR_NEXT_POPUP && MainService.sample.getStatus() != Sample.POPUP) {
+            new MotionSensorEventLoggerTask(userInviteId).execute(sensorEvent);
+        }
     }
 
     @Override
@@ -114,33 +111,50 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     }
 
     private void writeSensorMetaDataFireBase() {
+        if (!getSensorMeta().equals("true")) {
+            final DatabaseReference subDatabase = database.getReference("users/" + userUniqueId + "sensor_meta");
+            if(subDatabase == null) {
+                for (MySensor sensor : mSensors.values()) {
+                    if (sensor.getSensor() != null) {
+                        Map<String, Object> postValues = sensor.toMap();
 
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (userUniqueId == null) {
-                    userUniqueId = getUserUniqueId();
-                }
-                if (!snapshot.child("users").child(userUniqueId).hasChild("sensor_meta")) {
-
-                    for (MySensor sensor : mSensors.values()) {
-                        if (sensor.getSensor() != null) {
-                            Map<String, Object> postValues = sensor.toMap();
-
-                            mDatabase.child("users").child(userUniqueId).child("sensor_meta").push().setValue(postValues);
-                        }
+                        database.getReference("users/" + userUniqueId).child("sensor_meta").push().setValue(postValues);
                     }
-
-
-
                 }
+                SharedPreferences.Editor editorMeta = sharedPref.edit();
+                editorMeta.putString(getString(R.string.sensor_meta), "true");
+                editorMeta.apply();
             }
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
+
+//        subDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot snapshot) {
+//                if (userUniqueId == null) {
+//                    userUniqueId = getUserUniqueId();
+//                }
+//                if (!snapshot.hasChild("sensor_meta")) {
+//
+//                    for (MySensor sensor : mSensors.values()) {
+//                        if (sensor.getSensor() != null) {
+//                            Map<String, Object> postValues = sensor.toMap();
+//
+//                            subDatabase.child("sensor_meta").push().setValue(postValues);
+//                        }
+//                    }
+//
+//
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
 
     }
 
@@ -151,6 +165,11 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     public String getUserUniqueId() {
         return sharedPref.getString(getString(R.string.user_unique_id), "nodata");
     }
+    public String getSensorMeta() {
+        return sharedPref.getString(getString(R.string.sensor_meta), "nodata");
+    }
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
     private void addSensor(String name, int type) {

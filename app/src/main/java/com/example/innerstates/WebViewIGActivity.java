@@ -36,6 +36,8 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -47,8 +49,8 @@ public class WebViewIGActivity extends AppCompatActivity {
     public final static int REQUEST_CODE = 5463;
     private Context mContext;
     private static final String DEBUG_TAG = "WebViewIGActivity";
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference mDatabase = database.getReference();
+    FirebaseDatabase database = FirebaseDatabase.getInstance(MyUtil.FIREBASE_URL);
+//    DatabaseReference mDatabase = database.getReference();
     private float oldX = 0;
     private float oldY = 0;
     private long timerTime = 0;
@@ -136,7 +138,13 @@ public class WebViewIGActivity extends AppCompatActivity {
 
             TouchData touchData = new TouchData(touchSizeResult, touchPressureResult, durationSinceLastPressed, holdTime, distance, speed, userInviteId);
 
-            mDatabase.child("sensors_extra").child("TOUCH").push().setValue(touchData.toMap());
+            DatabaseReference subDatabase = database.getReference("sensors_extra/TOUCH");
+            String key = subDatabase.push().getKey();
+            Map<String, Object> childUpdates = new HashMap<>();
+            childUpdates.put(key, touchData.toMap());
+            subDatabase.updateChildren(childUpdates);
+
+//            database.getReference("sensors_extra/TOUCH").push().setValue(touchData.toMap());
         }
         touchSize.clear();
         touchPressure.clear();
@@ -165,10 +173,10 @@ public class WebViewIGActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (MainService.sample.getStatus() != Sample.WAIT_FOR_NEXT_POPUP && MainService.sample.getStatus() != Sample.POPUP) {
-            Log.d(DEBUG_TAG, "WHY----!!!!!");
-            refreshMessage();
-        }
+//        if (MainService.sample.getStatus() != Sample.WAIT_FOR_NEXT_POPUP && MainService.sample.getStatus() != Sample.POPUP) {
+//            Log.d(DEBUG_TAG, "WHY----!!!!!");
+//            refreshMessage();
+//        }
         Log.d("onResume---------->", "onResume");
     }
 
@@ -426,15 +434,22 @@ public class WebViewIGActivity extends AppCompatActivity {
 
         @Override
         public void onUpdate(Detector.Detections<Face> detections, Face face) {
-            float left = face.getIsLeftEyeOpenProbability();
-            float right = face.getIsRightEyeOpenProbability();
-            float smile = face.getIsSmilingProbability();
-            EyeData eyeData = new EyeData(left, right, smile, userInviteId);
+            if (MainService.sample.getStatus() != Sample.WAIT_FOR_NEXT_POPUP && MainService.sample.getStatus() != Sample.POPUP) {
+                float left = face.getIsLeftEyeOpenProbability();
+                float right = face.getIsRightEyeOpenProbability();
+                float smile = face.getIsSmilingProbability();
+                EyeData eyeData = new EyeData(left, right, smile, userInviteId);
 
 
-            mDatabase.child("sensors_extra").child("EYE_TRACKING").push().setValue(eyeData.toMap());
+//            database.getReference("sensors_extra/EYE_TRACKING").push().setValue(eyeData.toMap());
+                DatabaseReference subDatabase = database.getReference("sensors_extra/EYE_TRACKING");
+                String key = subDatabase.push().getKey();
+                Map<String, Object> childUpdates = new HashMap<>();
+                childUpdates.put(key, eyeData.toMap());
+                subDatabase.updateChildren(childUpdates);
 
-            Log.d("EyesTracker", "onUpdate: Eyes Detected");
+                Log.d("EyesTracker", "onUpdate: Eyes Detected");
+            }
         }
 
         @Override

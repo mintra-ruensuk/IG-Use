@@ -16,7 +16,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -56,8 +55,7 @@ public class SurveyActivity extends AppCompatActivity {
     private List<RadioGroup> radioGroups = new ArrayList<>();
 
     // Write a message to the database
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference mDatabase = database.getReference();
+    FirebaseDatabase database = FirebaseDatabase.getInstance(MyUtil.FIREBASE_URL);
     private SharedPreferences sharedPref;
 
     @Override
@@ -272,21 +270,23 @@ public class SurveyActivity extends AppCompatActivity {
         final String page = currentPage + "";
         surveyData.setPageFlow(surveyData.getPageFlow()+page);
 
-        mDatabase.child(childName2).child("page_flow").setValue(surveyData.getPageFlow());
+        database.getReference(childName2).child("page_flow").setValue(surveyData.getPageFlow());
 
     }
     private void pushSurveyDataToDB() {
         String surveyId = MyUtil.getRandomString(10);
 
+        DatabaseReference subDatabase = database.getReference("survey_data");
 
-        surveyKey = mDatabase.child("survey_data").child(surveyId).getKey();
+        surveyKey = subDatabase.child(surveyId).getKey();
         surveyData = new SurveyData(userUniqueId, surveyId, getInviteUserId());
         Map<String, Object> postValues = surveyData.toMap();
 
-        mDatabase.child("survey_data").child(surveyKey).setValue(postValues);
+
+        subDatabase.child(surveyKey).setValue(postValues);
 
         surveyAnswer = surveyData.getAnswer();
-        mDatabase.child("/survey_data/" + surveyKey + "/answer/").addValueEventListener(new ValueEventListener() {
+        subDatabase.child(surveyKey + "/answer/").addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -438,8 +438,8 @@ public class SurveyActivity extends AppCompatActivity {
         String answerKey = answerString.substring(0,3);
         String answerValue = answerString.substring(3,4);
 
-        String childName2 = "/survey_data/" + surveyKey;
-        mDatabase.child(childName2).child("answer").child(answerKey).setValue(answerValue);
+        String childName2 = "/survey_data/" + surveyKey + "/" + "answer";
+        database.getReference(childName2).child(answerKey).setValue(answerValue);
     }
 
 
@@ -454,9 +454,10 @@ public class SurveyActivity extends AppCompatActivity {
 
         long open_time_stamp = System.currentTimeMillis() / 1000L;
 
-        String childName2 = "/notification/";
-        mDatabase.child(childName2).child(notificationId+"").child("status").setValue(Notification.OPENED);
-        mDatabase.child(childName2).child(notificationId+"").child("open_time_stamp").setValue(open_time_stamp);
+        String childName2 = "/notification/" + notificationId;
+        DatabaseReference subDatabase = database.getReference(childName2);
+        subDatabase.child("status").setValue(Notification.OPENED);
+        subDatabase.child("open_time_stamp").setValue(open_time_stamp);
 
     }
 
@@ -478,9 +479,10 @@ public class SurveyActivity extends AppCompatActivity {
 
         long doneTime = MyUtil.getCurrentTime();
         String childName2 = "/survey_data/" + surveyKey;
-        mDatabase.child(childName2).child("status").setValue(SurveyData.DONE);
+        DatabaseReference subDatabase = database.getReference(childName2);
+        subDatabase.child("status").setValue(SurveyData.DONE);
 
-        mDatabase.child(childName2).child("done_time_stamp").setValue(doneTime);
+        subDatabase.child("done_time_stamp").setValue(doneTime);
     }
 
 

@@ -80,8 +80,8 @@ class SensorXYZ {
     public String childName;
 
     // Write a message to the database
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference mDatabase = database.getReference();
+    FirebaseDatabase database = FirebaseDatabase.getInstance(MyUtil.FIREBASE_URL);
+    DatabaseReference mDatabaseSensor = database.getReference("sensors");
 
 
     public SensorXYZ(SensorEvent event, String userId, String sensorChild){
@@ -110,12 +110,14 @@ class SensorXYZ {
         Log.d("pushToServer -- ", childName);
         if (!childName.equals("")) {
             Map<String, Object> childUpdates = new HashMap<>();
+            DatabaseReference subDatabase = database.getReference("sensors/" + childName);
             for( SensorXYZ obj : arrayList) {
 //                mDatabase.child("sensors").child(childName).push().setValue(obj.toMap());
-                String key = mDatabase.child("sensors").child(childName).push().getKey();
+                String key = subDatabase.push().getKey();
                 childUpdates.put(key, obj.toMap());
             }
-            mDatabase.child("sensors").child(childName).updateChildren(childUpdates);
+            subDatabase.updateChildren(childUpdates);
+            Log.d(childName, "PUSH PUSH=======");
 
         }
     }
@@ -279,9 +281,8 @@ class SensorOneValue {
     public String userId;
     public String childName = "";
 
-    // Write a message to the database
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference mDatabase = database.getReference();
+    FirebaseDatabase database = FirebaseDatabase.getInstance(MyUtil.FIREBASE_URL);
+    DatabaseReference mDatabaseSensor = database.getReference("sensors");
 
     public SensorOneValue(SensorEvent event, String userId, String childName){
         if (event.values.length > 0) {
@@ -306,10 +307,10 @@ class SensorOneValue {
         if (!childName.equals("")) {
             Map<String, Object> childUpdates = new HashMap<>();
             for( SensorOneValue obj : arrayList) {
-                String key = mDatabase.child("sensors").child(childName).push().getKey();
+                String key = mDatabaseSensor.child(childName).push().getKey();
                 childUpdates.put(key, obj.toMap());
             }
-            mDatabase.child("sensors").child(childName).updateChildren(childUpdates);
+            mDatabaseSensor.child(childName).updateChildren(childUpdates);
 
         }
     }
@@ -317,6 +318,7 @@ class SensorOneValue {
 class SensorLIGHT extends SensorOneValue {
     private static ArrayList<SensorOneValue> oneSecList = new ArrayList<>();
     private static long currentSec = 0;
+
 
     public SensorLIGHT(SensorEvent event, String userId, String childName) {
         super(event, userId, childName);

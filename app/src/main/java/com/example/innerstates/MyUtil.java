@@ -11,6 +11,7 @@ import java.util.UUID;
 public class MyUtil {
 
     private static final String ALLOWED_CHARACTERS ="0123456789qwertyuiopasdfghjklzxcvbnm";
+    public static final String FIREBASE_URL = "https://interactions-6d8cf-default-rtdb.firebaseio.com/";
 
     public static long getCurrentTime() {
         return System.currentTimeMillis() / 1L;

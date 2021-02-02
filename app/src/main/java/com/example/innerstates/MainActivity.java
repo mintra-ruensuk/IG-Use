@@ -21,13 +21,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -41,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String DEBUG_TAG = "MainActivity";
     private Context mContext;
     private SharedPreferences sharedPref;
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference mDatabase = database.getReference();
+    FirebaseDatabase database = FirebaseDatabase.getInstance(MyUtil.FIREBASE_URL);
+//    DatabaseReference mDatabase = database.getReference();
     private String userUniqueId;
 
     Intent mServiceIntent;
@@ -51,6 +47,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        DatabaseReference mDatabase = database.getReference();
+//        mDatabase.child("notification").removeValue();
+//        mDatabase.child("sensors").removeValue();
+//        mDatabase.child("sensors_extra").removeValue();
+//        mDatabase.child("survey_data").removeValue();
+//        mDatabase.child("inner_usage").removeValue();
+//        mDatabase.child("ig_usage").removeValue();
+//        mDatabase.child("users").removeValue();
+
+
 //        setContentView(R.layout.activity_main);
         setContentView(R.layout.activity_main2);
         getSupportActionBar().setTitle("Instagram Use");
@@ -260,25 +267,37 @@ public class MainActivity extends AppCompatActivity {
 
     private void writeNewUser() {
         final User user = new User(userUniqueId, getInviteUserId());
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (!snapshot.child("users").hasChild(userUniqueId)) {
+        final DatabaseReference subDatabase = database.getReference("users");
+        if (subDatabase == null) {
+            database.getReference().child("users").child(userUniqueId).setValue(user);
+            database.getReference("users").child(userUniqueId).child("inviteUserId").setValue(getInviteUserId());
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.user_unique_id), userUniqueId);
+            editor.apply();
 
-                    mDatabase.child("users").child(userUniqueId).setValue(user);
-                    mDatabase.child("users").child(userUniqueId).child("inviteUserId").setValue(getInviteUserId());
 
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putString(getString(R.string.user_unique_id), userUniqueId);
-                    editor.apply();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        }else {
+            database.getReference("users").child(userUniqueId).child("inviteUserId").setValue(getInviteUserId());
+        }
+//        subDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot snapshot) {
+//                if (!snapshot.child("users").hasChild(userUniqueId)) {
+//
+//                    subDatabase.child(userUniqueId).setValue(user);
+//                    subDatabase.child(userUniqueId).child("inviteUserId").setValue(getInviteUserId());
+//
+//                    SharedPreferences.Editor editor = sharedPref.edit();
+//                    editor.putString(getString(R.string.user_unique_id), userUniqueId);
+//                    editor.apply();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
 
     }
 

@@ -56,8 +56,7 @@ public class MainService extends Service {
     private PendingIntent alarmIntent;
 
     // Write a message to the database
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference mDatabase = database.getReference();
+    FirebaseDatabase database = FirebaseDatabase.getInstance(MyUtil.FIREBASE_URL);
 
     @Nullable
     @Override
@@ -68,12 +67,7 @@ public class MainService extends Service {
     @Override
     public void onCreate() {
 
-//        mDatabase.child("ig_usage").removeValue();
-//        mDatabase.child("inner_usage").removeValue();
-//        mDatabase.child("message").removeValue();
-//        mDatabase.child("notification").removeValue();
-//        mDatabase.child("survey_data").removeValue();
-//        mDatabase.child("users").removeValue();
+
 
 
 
@@ -147,7 +141,7 @@ public class MainService extends Service {
                         if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (90 * 60))) {
 //                        if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (60))) {
                             sample.setStatus(Sample.READY);
-                            startMotionLoggerService();
+//                            startMotionLoggerService();
                         }
                     }
 
@@ -222,12 +216,13 @@ public class MainService extends Service {
 
     private void writeNewUser() {
         final User user = new User(userUniqueId, getInviteUserId());
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference subDatabase = database.getReference("users");
+        subDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (!snapshot.child("users").hasChild(userUniqueId)) {
 
-                    mDatabase.child("users").child(userUniqueId).setValue(user);
+                    subDatabase.child(userUniqueId).setValue(user);
 
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString(getString(R.string.user_unique_id), userUniqueId);
@@ -248,7 +243,7 @@ public class MainService extends Service {
         AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, getInviteUserId(), context);
         Map<String, Object> postValues = appUsage.toMap();
 
-        mDatabase.child("ig_usage").push().setValue(postValues);
+        database.getReference("ig_usage").push().setValue(postValues);
     }
     private void writeOurAppUsage(String appPackageName, String status, Context context) {
 
@@ -256,7 +251,7 @@ public class MainService extends Service {
         AppUsage appUsage = new AppUsage(userUniqueId, appPackageName, status, getInviteUserId(), context);
         Map<String, Object> postValues = appUsage.toMap();
 
-        mDatabase.child("inner_usage").push().setValue(postValues);
+        database.getReference("inner_usage").push().setValue(postValues);
     }
 
     private void writeNewNotification(int notificationId) {
@@ -265,8 +260,9 @@ public class MainService extends Service {
         Notification appUsage = new Notification(userUniqueId, notificationId, getInviteUserId());
         Map<String, Object> postValues = appUsage.toMap();
 
-        String key = mDatabase.child("notification").child(notificationId + "").getKey();
-        mDatabase.child("notification").child(key).setValue(postValues);
+        DatabaseReference subDatabase = database.getReference("notification");
+        String key = subDatabase.child(notificationId + "").getKey();
+        subDatabase.child(key).setValue(postValues);
 
 
     }
@@ -274,8 +270,8 @@ public class MainService extends Service {
     public void recordCancelNotification(int notificationId) {
 
         String childName2 = "/notification/";
-
-        mDatabase.child(childName2).child(notificationId+"").child("status").setValue(Notification.MISSED);
+        DatabaseReference subDatabase = database.getReference("notification");
+        subDatabase.child(notificationId+"").child("status").setValue(Notification.MISSED);
 
     }
 

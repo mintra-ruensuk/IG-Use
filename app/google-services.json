@@ -1,262 +1,34 @@
 {
   "project_info": {
-    "project_number": "209691124855",
-    "firebase_url": "https://tufirebase.firebaseio.com",
-    "project_id": "tufirebase",
-    "storage_bucket": "tufirebase.appspot.com"
+    "project_number": "617931090255",
+    "project_id": "interactions-6d8cf",
+    "storage_bucket": "interactions-6d8cf.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:209691124855:android:b9c5ba9d6224ec56",
-        "android_client_info": {
-          "package_name": "com.example.chatapplication"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "209691124855-osm8sag44cmh4m9lvh5evr1lduc4ruja.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.chatapplication",
-            "certificate_hash": "690ea8031bbaf8e7dc9bc980c42c3c4cd67046ff"
-          }
-        },
-        {
-          "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD4YdwnvSuXmL94xHZkxXwmy9iLKgP0Xw4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "209691124855-7liqn34qo4t1o5imt3vblkmofh9v42sh.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "unist.interactions.MyKeyboard"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:209691124855:android:bc1d159c6e3641c8725272",
+        "mobilesdk_app_id": "1:617931090255:android:3850520ff47df1b4ae3d3a",
         "android_client_info": {
           "package_name": "com.example.innerstates"
         }
       },
       "oauth_client": [
         {
-          "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
+          "client_id": "617931090255-uriasnua3qm7nnuuij2lh890ptrgev92.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD4YdwnvSuXmL94xHZkxXwmy9iLKgP0Xw4"
+          "current_key": "AIzaSyBQif6iDb2YuAwGHnl8gmBig8gEdUDMLss"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
+              "client_id": "617931090255-uriasnua3qm7nnuuij2lh890ptrgev92.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "209691124855-7liqn34qo4t1o5imt3vblkmofh9v42sh.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "unist.interactions.MyKeyboard"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:209691124855:android:0e9ed76ff3605615",
-        "android_client_info": {
-          "package_name": "com.example.sf333_finalexam"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "209691124855-qbbbdhl375h9n7ntus4ukmr98muq1bpr.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.sf333_finalexam",
-            "certificate_hash": "690ea8031bbaf8e7dc9bc980c42c3c4cd67046ff"
-          }
-        },
-        {
-          "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD4YdwnvSuXmL94xHZkxXwmy9iLKgP0Xw4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "209691124855-7liqn34qo4t1o5imt3vblkmofh9v42sh.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "unist.interactions.MyKeyboard"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:209691124855:android:6531d8f8f700f433",
-        "android_client_info": {
-          "package_name": "com.example.stamfordfirebase"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "209691124855-usqhq26vnb7fsh50u2ffuop5u7dc6cnf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.stamfordfirebase",
-            "certificate_hash": "690ea8031bbaf8e7dc9bc980c42c3c4cd67046ff"
-          }
-        },
-        {
-          "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD4YdwnvSuXmL94xHZkxXwmy9iLKgP0Xw4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "209691124855-7liqn34qo4t1o5imt3vblkmofh9v42sh.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "unist.interactions.MyKeyboard"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:209691124855:android:6909b4c6a07fefab",
-        "android_client_info": {
-          "package_name": "com.example.tufirebase"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "209691124855-tu7plgmhe1e6khbkeh9airg89pd3qhk3.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.tufirebase",
-            "certificate_hash": "690ea8031bbaf8e7dc9bc980c42c3c4cd67046ff"
-          }
-        },
-        {
-          "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD4YdwnvSuXmL94xHZkxXwmy9iLKgP0Xw4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "209691124855-7liqn34qo4t1o5imt3vblkmofh9v42sh.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "unist.interactions.MyKeyboard"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:209691124855:android:b5d75907de594a2d",
-        "android_client_info": {
-          "package_name": "com.google.firebase.codelab.friendlychat"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "209691124855-6fp8m02r35vae8gsahpqn5fe19trck2b.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.google.firebase.codelab.friendlychat",
-            "certificate_hash": "690ea8031bbaf8e7dc9bc980c42c3c4cd67046ff"
-          }
-        },
-        {
-          "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD4YdwnvSuXmL94xHZkxXwmy9iLKgP0Xw4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "209691124855-5u8i1hdsnmhr89b5vfbikpmhmknu2a6c.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "209691124855-7liqn34qo4t1o5imt3vblkmofh9v42sh.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "unist.interactions.MyKeyboard"
-              }
             }
           ]
         }
