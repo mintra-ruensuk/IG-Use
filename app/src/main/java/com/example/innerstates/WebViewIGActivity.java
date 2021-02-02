@@ -65,6 +65,9 @@ public class WebViewIGActivity extends AppCompatActivity {
 
     CameraSource cameraSource;
 
+    private static ArrayList<EyeData> oneSecList = new ArrayList<>();
+    private static long currentSec = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -428,6 +431,7 @@ public class WebViewIGActivity extends AppCompatActivity {
 
         private final float THRESHOLD = 0.75f;
 
+
         private EyesTracker() {
             Log.d("EyesTracker", "constructor");
         }
@@ -440,15 +444,22 @@ public class WebViewIGActivity extends AppCompatActivity {
                 float smile = face.getIsSmilingProbability();
                 EyeData eyeData = new EyeData(left, right, smile, userInviteId);
 
+                long dataSec = eyeData.timeStamp / 1000L;
+                if (dataSec == currentSec) {
+                    oneSecList.add(eyeData);
+                }else if (dataSec != currentSec) {
+
+                    Log.d("SensorAccel", " --------" + oneSecList.size());
+                    pushToServer();
+                    currentSec = dataSec;
+                    oneSecList.clear();
+                }
+
+
+
 
 //            database.getReference("sensors_extra/EYE_TRACKING").push().setValue(eyeData.toMap());
-                DatabaseReference subDatabase = database.getReference("sensors_extra/EYE_TRACKING");
-                String key = subDatabase.push().getKey();
-                Map<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put(key, eyeData.toMap());
-                subDatabase.updateChildren(childUpdates);
 
-                Log.d("EyesTracker", "onUpdate: Eyes Detected");
             }
         }
 
@@ -461,6 +472,24 @@ public class WebViewIGActivity extends AppCompatActivity {
         @Override
         public void onDone() {
             super.onDone();
+        }
+        public void pushToServer() {
+//            DatabaseReference subDatabase = database.getReference("sensors_extra/EYE_TRACKING");
+//            String key = subDatabase.push().getKey();
+//            Map<String, Object> childUpdates = new HashMap<>();
+//            childUpdates.put(key, eyeData.toMap());
+//            subDatabase.updateChildren(childUpdates);
+//
+//            Log.d("EyesTracker", "onUpdate: Eyes Detected");
+
+            Map<String, Object> childUpdates = new HashMap<>();
+            DatabaseReference subDatabase = database.getReference("sensors_extra/EYE_TRACKING");
+            for( EyeData obj : oneSecList) {
+                String key = subDatabase.push().getKey();
+                childUpdates.put(key, obj.toMap());
+            }
+            subDatabase.updateChildren(childUpdates);
+            Log.d("EyesTracker", "PUSH PUSH=======");
         }
     }
 
