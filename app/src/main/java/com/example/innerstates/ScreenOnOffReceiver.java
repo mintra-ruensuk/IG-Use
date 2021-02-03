@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -20,14 +19,14 @@ public class ScreenOnOffReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
 
-        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-            Log.d("StackOverflow", "Screen Off");
-            writeScreenOnOff(context, "off");
-
-        } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-            Log.d("StackOverflow", "Screen On");
-            writeScreenOnOff(context, "on");
-        }
+//        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+//            Log.d("StackOverflow", "Screen Off");
+//            writeScreenOnOff(context, "off");
+//
+//        } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+//            Log.d("StackOverflow", "Screen On");
+//            writeScreenOnOff(context, "on");
+//        }
     }
     private void writeScreenOnOff(Context context, String onOff) {
         SharedPreferences sharedPref = context.getSharedPreferences("com.example.innerstates.PREFERENCE_FILE_KEY",

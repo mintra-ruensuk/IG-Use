@@ -19,7 +19,7 @@ public class ScreenOnOffService extends Service {
     @Override
     public void onCreate() {
         Log.d("ScreenOnOffService", "ScreenOnOffService----<><><><");
-        registerScreenStatusReceiver();
+//        registerScreenStatusReceiver();
 //        if (Build.VERSION.SDK_INT >= 26) {
 //            String CHANNEL_ID = "ScreenOnOff";
 //            NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
@@ -36,7 +36,7 @@ public class ScreenOnOffService extends Service {
 
     @Override
     public void onDestroy() {
-        unregisterScreenStatusReceiver();
+//        unregisterScreenStatusReceiver();
     }
 
     private void registerScreenStatusReceiver() {

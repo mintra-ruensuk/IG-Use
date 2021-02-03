@@ -22,7 +22,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.example.innerstates.lang.EnglishQuestion;
+import com.example.innerstates.lang.KoreanQuestion;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,8 +55,7 @@ public class SurveyActivity extends AppCompatActivity {
     private List<RadioGroup> radioGroups = new ArrayList<>();
 
     // Write a message to the database
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference mDatabase = database.getReference();
+    FirebaseDatabase database = FirebaseDatabase.getInstance(MyUtil.FIREBASE_URL);
     private SharedPreferences sharedPref;
 
     @Override
@@ -271,21 +270,23 @@ public class SurveyActivity extends AppCompatActivity {
         final String page = currentPage + "";
         surveyData.setPageFlow(surveyData.getPageFlow()+page);
 
-        mDatabase.child(childName2).child("page_flow").setValue(surveyData.getPageFlow());
+        database.getReference(childName2).child("page_flow").setValue(surveyData.getPageFlow());
 
     }
     private void pushSurveyDataToDB() {
         String surveyId = MyUtil.getRandomString(10);
 
+        DatabaseReference subDatabase = database.getReference("survey_data");
 
-        surveyKey = mDatabase.child("survey_data").child(surveyId).getKey();
+        surveyKey = subDatabase.child(surveyId).getKey();
         surveyData = new SurveyData(userUniqueId, surveyId, getInviteUserId());
         Map<String, Object> postValues = surveyData.toMap();
 
-        mDatabase.child("survey_data").child(surveyKey).setValue(postValues);
+
+        subDatabase.child(surveyKey).setValue(postValues);
 
         surveyAnswer = surveyData.getAnswer();
-        mDatabase.child("/survey_data/" + surveyKey + "/answer/").addValueEventListener(new ValueEventListener() {
+        subDatabase.child(surveyKey + "/answer/").addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -305,37 +306,37 @@ public class SurveyActivity extends AppCompatActivity {
     }
 
     private void createSurvey() {
-        Question typeCommmu = new Question("ty1", EnglishQuestion.type_of_communication, EnglishQuestion.choiceCommunication());
+        Question typeCommmu = new Question("ty1", KoreanQuestion.type_of_communication, KoreanQuestion.choiceCommunication());
 
-        Question socialCompare1 = new Question("so1", EnglishQuestion.social1, EnglishQuestion.disToAgree());
-        Question socialCompare2 = new Question("so2", EnglishQuestion.social2, EnglishQuestion.disToAgree());
+        Question socialCompare1 = new Question("so1", KoreanQuestion.social1, KoreanQuestion.disToAgree());
+        Question socialCompare2 = new Question("so2", KoreanQuestion.social2, KoreanQuestion.disToAgree());
 
-        Question body1 = new Question("bd1", EnglishQuestion.body1, EnglishQuestion.bodyScale());
-        Question body2 = new Question("bd2", EnglishQuestion.body2, EnglishQuestion.bodyScale());
+        Question body1 = new Question("bd1", KoreanQuestion.body1, KoreanQuestion.bodyScale());
+        Question body2 = new Question("bd2", KoreanQuestion.body2, KoreanQuestion.bodyScale());
 
-        Question envy1 = new Question("ev1", EnglishQuestion.envy1, EnglishQuestion.disToAgree());
-        Question envy2 = new Question("ev2", EnglishQuestion.envy2, EnglishQuestion.disToAgree());
-        Question envy3 = new Question("ev3", EnglishQuestion.envy3, EnglishQuestion.disToAgree());
-        Question envy4 = new Question("ev4", EnglishQuestion.envy4, EnglishQuestion.disToAgree());
-        Question envy5 = new Question("ev5", EnglishQuestion.envy5, EnglishQuestion.disToAgree());
-        Question envy6 = new Question("ev6", EnglishQuestion.envy6, EnglishQuestion.disToAgree());
+        Question envy1 = new Question("ev1", KoreanQuestion.envy1, KoreanQuestion.disToAgree());
+        Question envy2 = new Question("ev2", KoreanQuestion.envy2, KoreanQuestion.disToAgree());
+        Question envy3 = new Question("ev3", KoreanQuestion.envy3, KoreanQuestion.disToAgree());
+        Question envy4 = new Question("ev4", KoreanQuestion.envy4, KoreanQuestion.disToAgree());
+        Question envy5 = new Question("ev5", KoreanQuestion.envy5, KoreanQuestion.disToAgree());
+        Question envy6 = new Question("ev6", KoreanQuestion.envy6, KoreanQuestion.disToAgree());
 
-        Question esteem1 = new Question("es1", EnglishQuestion.esteem1, EnglishQuestion.esteemScale());
-        Question esteem2 = new Question("es2", EnglishQuestion.esteem2, EnglishQuestion.esteemScale());
-        Question esteem3 = new Question("es3", EnglishQuestion.esteem3, EnglishQuestion.esteemScale());
-
-
-
-        Question depress1 = new Question("dp1", EnglishQuestion.depress2, EnglishQuestion.depressScale());
-        Question depress2 = new Question("dp2", EnglishQuestion.depress3, EnglishQuestion.depressScale());
+        Question esteem1 = new Question("es1", KoreanQuestion.esteem1, KoreanQuestion.esteemScale());
+        Question esteem2 = new Question("es2", KoreanQuestion.esteem2, KoreanQuestion.esteemScale());
+        Question esteem3 = new Question("es3", KoreanQuestion.esteem3, KoreanQuestion.esteemScale());
 
 
 
-        Question valence = new Question("sa1", "", EnglishQuestion.samScale());
-        Question arousal = new Question("sa2", "", EnglishQuestion.samScale());
+        Question depress1 = new Question("dp1", KoreanQuestion.depress2, KoreanQuestion.depressScale());
+        Question depress2 = new Question("dp2", KoreanQuestion.depress3, KoreanQuestion.depressScale());
 
-        Question openQ1 = new Question("op1", EnglishQuestion.openQ1, EnglishQuestion.samScale());
-        Question openQ2 = new Question("op2", EnglishQuestion.openQ2, EnglishQuestion.samScale());
+
+
+        Question valence = new Question("sa1", "", KoreanQuestion.samScale());
+        Question arousal = new Question("sa2", "", KoreanQuestion.samScale());
+
+        Question openQ1 = new Question("op1", KoreanQuestion.openQ1, KoreanQuestion.samScale());
+        Question openQ2 = new Question("op2", KoreanQuestion.openQ2, KoreanQuestion.samScale());
 
 //        surveyQuestion.put("page1", new Question[] {valence, arousal});
 //        surveyQuestion.put("page2", new Question[] {typeCommmu});
@@ -437,8 +438,8 @@ public class SurveyActivity extends AppCompatActivity {
         String answerKey = answerString.substring(0,3);
         String answerValue = answerString.substring(3,4);
 
-        String childName2 = "/survey_data/" + surveyKey;
-        mDatabase.child(childName2).child("answer").child(answerKey).setValue(answerValue);
+        String childName2 = "/survey_data/" + surveyKey + "/" + "answer";
+        database.getReference(childName2).child(answerKey).setValue(answerValue);
     }
 
 
@@ -453,9 +454,10 @@ public class SurveyActivity extends AppCompatActivity {
 
         long open_time_stamp = System.currentTimeMillis() / 1000L;
 
-        String childName2 = "/notification/";
-        mDatabase.child(childName2).child(notificationId+"").child("status").setValue(Notification.OPENED);
-        mDatabase.child(childName2).child(notificationId+"").child("open_time_stamp").setValue(open_time_stamp);
+        String childName2 = "/notification/" + notificationId;
+        DatabaseReference subDatabase = database.getReference(childName2);
+        subDatabase.child("status").setValue(Notification.OPENED);
+        subDatabase.child("open_time_stamp").setValue(open_time_stamp);
 
     }
 
@@ -477,9 +479,10 @@ public class SurveyActivity extends AppCompatActivity {
 
         long doneTime = MyUtil.getCurrentTime();
         String childName2 = "/survey_data/" + surveyKey;
-        mDatabase.child(childName2).child("status").setValue(SurveyData.DONE);
+        DatabaseReference subDatabase = database.getReference(childName2);
+        subDatabase.child("status").setValue(SurveyData.DONE);
 
-        mDatabase.child(childName2).child("done_time_stamp").setValue(doneTime);
+        subDatabase.child("done_time_stamp").setValue(doneTime);
     }
 
 

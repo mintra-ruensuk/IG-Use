@@ -30,23 +30,23 @@ public class SurveyData {
         this.doneTimeStamp = 0;
         answer = new HashMap<>();
         answer.put("ty1", "0"); // type of communication
-        answer.put("so1", "0"); // social comparison 1
-        answer.put("so2", "0"); // social comparison 2
+//        answer.put("so1", "0"); // social comparison 1
+//        answer.put("so2", "0"); // social comparison 2
         answer.put("ev1", "0"); // envy 1
         answer.put("ev2", "0"); // envy 2
         answer.put("ev3", "0"); // envy 2
         answer.put("ev4", "0"); // envy 1
         answer.put("ev5", "0"); // envy 2
         answer.put("ev6", "0"); // envy 2
-        answer.put("es1", "0"); // self-esteem 1
-        answer.put("es2", "0"); // self-esteem 2
-        answer.put("es3", "0"); // self-esteem 3
-        answer.put("dp1", "0"); // depress 1
-        answer.put("dp2", "0"); // depress 2
+//        answer.put("es1", "0"); // self-esteem 1
+//        answer.put("es2", "0"); // self-esteem 2
+//        answer.put("es3", "0"); // self-esteem 3
+//        answer.put("dp1", "0"); // depress 1
+//        answer.put("dp2", "0"); // depress 2
         answer.put("bd1", "0"); // body comparison 1
         answer.put("bd2", "0"); // body comparison 2
-        answer.put("sa1", "0"); // valence
-        answer.put("sa2", "0"); // arousal
+//        answer.put("sa1", "0"); // valence
+//        answer.put("sa2", "0"); // arousal
 //        answer.put("op1", "0"); // open-ended question 1
 //        answer.put("op2", "0"); // open-ended question 2
 

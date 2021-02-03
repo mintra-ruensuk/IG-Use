@@ -30,11 +30,12 @@ public class MainActivity extends AppCompatActivity {
 //    final static String CHANNEL_ID = "123456";
     private Context mContext;
     private SharedPreferences sharedPref;
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference mDatabase = database.getReference();
+    FirebaseDatabase database = FirebaseDatabase.getInstance(MyUtil.FIREBASE_URL);
+//    DatabaseReference mDatabase = database.getReference();
 
     Intent mServiceIntent;
     private MainService mMainService;
+    private String userUniqueId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
         sharedPref = mContext.getSharedPreferences(
                 getString(R.string.preference_file_key), Context.MODE_PRIVATE);
 
-
+        userUniqueId = Secure.getString(this.getContentResolver(),
+                Secure.ANDROID_ID);
         checkInviteCode();
 
 
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         refreshMessage();
         Log.d("onResume---------->", "onResume");
     }
+
 
 
     private void refreshMessage() {
@@ -92,10 +95,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("serviceeeeee------>", "AppStopped is starting...");
                 startService(new Intent(getBaseContext(), AppStopped.class));
             }
-            if (!isMyServiceRunning(ScreenOnOffService.class, this)) {
-                Log.d("serviceeeeee------>", "ScreenOnOffService is starting...");
-                startService(new Intent(getBaseContext(), ScreenOnOffService.class));
-            }
+//            if (!isMyServiceRunning(ScreenOnOffService.class, this)) {
+//                Log.d("serviceeeeee------>", "ScreenOnOffService is starting...");
+//                startService(new Intent(getBaseContext(), ScreenOnOffService.class));
+//            }
 
 //            mMainService = new MainService();
 //            mServiceIntent = new Intent(this, MainService.class);
@@ -195,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         String inviteUserId = getInviteUserId();
-        final String userUniqueId = Secure.getString(this.getContentResolver(),
+        userUniqueId = Secure.getString(this.getContentResolver(),
                 Secure.ANDROID_ID);
 //        Log.e("idididididi--->", inviteUserId);
 
@@ -217,10 +220,7 @@ public class MainActivity extends AppCompatActivity {
                         editText.setVisibility(View.GONE);
                         button.setVisibility(View.GONE);
 
-
-
-                        String childName = "/users/" + userUniqueId;
-                        mDatabase.child(childName).child("inviteUserId").setValue(code);
+                        writeNewUser();
 
 
                         Toast.makeText(getApplicationContext(),"Thank you for registration!",Toast.LENGTH_LONG).show();
@@ -233,6 +233,22 @@ public class MainActivity extends AppCompatActivity {
             });
 
         }
+    }
+
+    private void writeNewUser() {
+        final User user = new User(userUniqueId, getInviteUserId());
+        final DatabaseReference subDatabase = database.getReference("users");
+        if (subDatabase == null) {
+            database.getReference().child("users").child(userUniqueId).setValue(user);
+            database.getReference("users").child(userUniqueId).child("inviteUserId").setValue(getInviteUserId());
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.user_unique_id), userUniqueId);
+            editor.apply();
+
+        }else {
+            database.getReference("users").child(userUniqueId).child("inviteUserId").setValue(getInviteUserId());
+        }
+
     }
 
     public String getInviteUserId() {
