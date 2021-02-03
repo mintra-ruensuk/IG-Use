@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
@@ -113,19 +112,17 @@ public class MotionLoggerService extends Service implements SensorEventListener 
 
     private void writeSensorMetaDataFireBase() {
         if (!getSensorMeta().equals("true")) {
-            final DatabaseReference subDatabase = database.getReference("users/" + userUniqueId + "sensor_meta");
-            if(subDatabase == null) {
-                for (MySensor sensor : mSensors.values()) {
-                    if (sensor.getSensor() != null) {
-                        Map<String, Object> postValues = sensor.toMap();
 
-                        database.getReference("users/" + userUniqueId).child("sensor_meta").push().setValue(postValues);
-                    }
+            for (MySensor sensor : mSensors.values()) {
+                if (sensor.getSensor() != null) {
+                    Map<String, Object> postValues = sensor.toMap();
+
+                    database.getReference("users/" + userUniqueId).child("sensor_meta").push().setValue(postValues);
                 }
-                SharedPreferences.Editor editorMeta = sharedPref.edit();
-                editorMeta.putString(getString(R.string.sensor_meta), "true");
-                editorMeta.apply();
             }
+            SharedPreferences.Editor editorMeta = sharedPref.edit();
+            editorMeta.putString(getString(R.string.sensor_meta), "true");
+            editorMeta.apply();
         }
 
 
