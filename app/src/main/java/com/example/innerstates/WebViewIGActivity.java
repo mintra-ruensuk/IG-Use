@@ -86,17 +86,20 @@ public class WebViewIGActivity extends AppCompatActivity {
 
 
         mContext = this.getBaseContext();
-        webView  = new WebView(this);
-
-
 
         userInviteId = getInviteUserId();
 
 
+        loadWebView();
+        createCameraSource();
+        refreshMessage();
+
+    }
+
+    public void loadWebView() {
+        webView  = new WebView(mContext);
         webView.getSettings().setJavaScriptEnabled(true); // enable javascript
 
-//        final Activity activity = this;
-//
         webView.setWebViewClient(new WebViewClient() {
 
             @TargetApi(android.os.Build.VERSION_CODES.M)
@@ -113,16 +116,10 @@ public class WebViewIGActivity extends AppCompatActivity {
                 return false; // then it is not handled by default action
             }
         });
-
-
         attachTouchEvent();
         // URL laden:
         webView.loadUrl("https://instagram.com");
         setContentView(webView);
-
-        createCameraSource();
-        refreshMessage();
-
     }
 
     public void calStat() {
@@ -176,10 +173,11 @@ public class WebViewIGActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        if (MainService.sample.getStatus() != Sample.WAIT_FOR_NEXT_POPUP && MainService.sample.getStatus() != Sample.POPUP) {
-//            Log.d(DEBUG_TAG, "WHY----!!!!!");
-//            refreshMessage();
-//        }
+        if (MainService.sample.getStatus() != Sample.WAIT_FOR_NEXT_POPUP && MainService.sample.getStatus() != Sample.POPUP) {
+            Log.d(DEBUG_TAG, "WHY----!!!!!");
+            loadWebView();
+            refreshMessage();
+        }
         Log.d("onResume---------->", "onResume");
     }
 
@@ -192,6 +190,7 @@ public class WebViewIGActivity extends AppCompatActivity {
             cameraSource.stop();
         }
     }
+
 
     @Override
     protected void onDestroy() {
@@ -262,6 +261,7 @@ public class WebViewIGActivity extends AppCompatActivity {
         if (granted && rc == AppOpsManager.MODE_ALLOWED) {
 
             Log.d(DEBUG_TAG, " ...... !!!!! ....");
+            currentSec = MyUtil.getCurrentTime();
             startMotionLoggerService();
 
 
@@ -433,7 +433,7 @@ public class WebViewIGActivity extends AppCompatActivity {
 
 
         private EyesTracker() {
-            Log.d("EyesTracker", "constructor");
+//            Log.d("EyesTracker", "constructor");
         }
 
         @Override
@@ -449,7 +449,7 @@ public class WebViewIGActivity extends AppCompatActivity {
                     oneSecList.add(eyeData);
                 }else if (dataSec != currentSec) {
 
-                    Log.d("SensorAccel", " --------" + oneSecList.size());
+                    Log.d("EyesTracker", " --------" + oneSecList.size());
                     pushToServer();
                     currentSec = dataSec;
                     oneSecList.clear();

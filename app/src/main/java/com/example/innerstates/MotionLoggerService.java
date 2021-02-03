@@ -57,6 +57,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
         userInviteId = getInviteUserId();
         userUniqueId = getUserUniqueId();
 
+
         sensorList.add("ACCELEROMETER");
         sensorList.add("GYROSCOPE");
         sensorList.add("GRAVITY");
@@ -188,5 +189,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
                 mSensorManager.unregisterListener(this, sensor.getSensor());
             }
         }
+        mSensors.clear();
+        sensorList.clear();
     }
 }
