@@ -18,7 +18,7 @@ public class Sample {
     public int getStatus() { return this.status; }
     public void setStatus(int status) {
         if(status == WAIT_FOR_NEXT_POPUP) {
-            MainService.startWaitNextNotificationTime = MyUtil.getCurrentTime();
+            MainService.startWaitNextNotificationTime = MyUtil.getCurrentTime1000();
         }
         this.status = status;
     }
