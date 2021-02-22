@@ -73,13 +73,6 @@ public class WebViewIGActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        mDatabase.child("ig_usage").removeValue();
-//        mDatabase.child("inner_usage").removeValue();
-//        mDatabase.child("message").removeValue();
-//        mDatabase.child("notification").removeValue();
-//        mDatabase.child("survey_data").removeValue();
-//        mDatabase.child("users").removeValue();
-//        mDatabase.child("sensors").removeValue();
 
         sharedPref = getSharedPreferences(getString(R.string.preference_file_key),
                 MODE_PRIVATE);

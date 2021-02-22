@@ -27,8 +27,8 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     private SensorManager mSensorManager = null;
     private Sensor sensor = null;
 
-    private ArrayList<String> sensorList = new ArrayList<>();
-    private HashMap<String, MySensor> mSensors = new HashMap<>();
+    public ArrayList<String> sensorList = new ArrayList<>();
+    public HashMap<String, MySensor> mSensors = new HashMap<>();
 
     // Write a message to the database
     FirebaseDatabase database = FirebaseDatabase.getInstance(MyUtil.FIREBASE_URL);
@@ -65,7 +65,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
         sensorList.add("ROTATION_VECTOR");
         sensorList.add("MAGNETIC_FIELD");
         sensorList.add("PROXIMITY");
-        sensorList.add("AMBIENT_TEMPERATURE");
+//        sensorList.add("AMBIENT_TEMPERATURE");
 
         addSensor("ACCELEROMETER", Sensor.TYPE_ACCELEROMETER);
         addSensor("GYROSCOPE", Sensor.TYPE_GYROSCOPE);
@@ -75,7 +75,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
         addSensor("ROTATION_VECTOR", Sensor.TYPE_ROTATION_VECTOR);
         addSensor("MAGNETIC_FIELD", Sensor.TYPE_MAGNETIC_FIELD);
         addSensor("PROXIMITY", Sensor.TYPE_PROXIMITY);
-        addSensor("AMBIENT_TEMPERATURE", Sensor.TYPE_AMBIENT_TEMPERATURE);
+//        addSensor("AMBIENT_TEMPERATURE", Sensor.TYPE_AMBIENT_TEMPERATURE);
 
 
         for (MySensor sensor : mSensors.values()) {
@@ -113,16 +113,19 @@ public class MotionLoggerService extends Service implements SensorEventListener 
     private void writeSensorMetaDataFireBase() {
         if (!getSensorMeta().equals("true")) {
 
-            for (MySensor sensor : mSensors.values()) {
-                if (sensor.getSensor() != null) {
-                    Map<String, Object> postValues = sensor.toMap();
+            if (mSensors.size() >= 8) {
+                for (MySensor sensor : mSensors.values()) {
+                    if (sensor.getSensor() != null) {
+                        Map<String, Object> postValues = sensor.toMap();
 
-                    database.getReference("users/" + userUniqueId).child("sensor_meta").push().setValue(postValues);
+                        database.getReference("users/" + userUniqueId).child("sensor_meta").push().setValue(postValues);
+                    }
                 }
+                SharedPreferences.Editor editorMeta = sharedPref.edit();
+                editorMeta.putString(getString(R.string.sensor_meta), "true");
+                editorMeta.apply();
             }
-            SharedPreferences.Editor editorMeta = sharedPref.edit();
-            editorMeta.putString(getString(R.string.sensor_meta), "true");
-            editorMeta.apply();
+
         }
 
 

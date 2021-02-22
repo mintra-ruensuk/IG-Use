@@ -101,7 +101,7 @@ public class MainService extends Service {
                     recordIgUsage(packageName);
                     recordOurAppUsage(packageName);
 
-                    // IF 1.5 hours has passed... then do this:
+
                     if (sample.getStatus() == Sample.READY
                             && isOurAppOnForeground(packageName)) {
                         sample.setStatus(Sample.IG_OPENED);
@@ -112,7 +112,7 @@ public class MainService extends Service {
                             && !isOurAppOnForeground(packageName)) {
 
                         // Use IG at least 15 seconds
-                        if(MyUtil.getCurrentTime1000() >= (igOpenTime + 13)) {
+                        if(MyUtil.getCurrentTime1000() >= (igOpenTime + 14)) {
                             sample.setStatus(Sample.POPUP);
 
 
@@ -120,7 +120,7 @@ public class MainService extends Service {
                             notifyTime = MyUtil.getCurrentTime1000();
 
                         }else {
-                            sample.setStatus(Sample.READY);
+                            sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
                         }
 
 
@@ -141,7 +141,6 @@ public class MainService extends Service {
                         if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (90 * 60))) {
 //                        if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (60))) {
                             sample.setStatus(Sample.READY);
-//                            startMotionLoggerService();
                         }
                     }
 
@@ -369,15 +368,6 @@ public class MainService extends Service {
         return false;
     }
 
-    public void startMotionLoggerService() {
-        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
-            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
-            startService(new Intent(getBaseContext(), MotionLoggerService.class));
-        }else {
-            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
-        }
 
-
-    }
 
 }
