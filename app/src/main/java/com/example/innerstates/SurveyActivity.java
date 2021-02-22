@@ -279,7 +279,7 @@ public class SurveyActivity extends AppCompatActivity {
         DatabaseReference subDatabase = database.getReference("survey_data");
 
         surveyKey = subDatabase.child(surveyId).getKey();
-        surveyData = new SurveyData(userUniqueId, surveyId, getInviteUserId());
+        surveyData = new SurveyData(userUniqueId, surveyId, getInviteUserId(), getAppOpenTime());
         Map<String, Object> postValues = surveyData.toMap();
 
 
@@ -452,7 +452,7 @@ public class SurveyActivity extends AppCompatActivity {
 
     public void changeNotiToOpenedStatus(int notificationId) {
 
-        long open_time_stamp = System.currentTimeMillis() / 1000L;
+        long open_time_stamp = MyUtil.getCurrentTime();
 
         String childName2 = "/notification/" + notificationId;
         DatabaseReference subDatabase = database.getReference(childName2);
@@ -473,6 +473,10 @@ public class SurveyActivity extends AppCompatActivity {
 
     public String getInviteUserId() {
         return sharedPref.getString(getString(R.string.invitation_user_id), "nodata");
+    }
+
+    public String getAppOpenTime() {
+        return sharedPref.getString(getString(R.string.app_open_time), "00000000");
     }
 
     public void changeSurveyStatusToDone() {

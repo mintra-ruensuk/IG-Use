@@ -120,7 +120,7 @@ public class MainService extends Service {
                             notifyTime = MyUtil.getCurrentTime1000();
 
                         }else {
-                            sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
+                            sample.setStatus(Sample.READY);
                         }
 
 
@@ -129,17 +129,18 @@ public class MainService extends Service {
                     }
                     if (sample.getStatus() == Sample.POPUP) {
                         // 5 minutes = 300seconds
-                        if(MyUtil.getCurrentTime1000() >= (notifyTime + 300)) {
+//                        if(MyUtil.getCurrentTime1000() >= (notifyTime + 300)) {
+                        if(MyUtil.getCurrentTime1000() >= (notifyTime + 10)) {
                             cancelNotification(instance, notificationId);
                             recordCancelNotification(notificationId);
 
-                            sample.setStatus(Sample.READY);
+                            sample.setStatus(Sample.WAIT_FOR_NEXT_POPUP);
                         }
                     }
                     if (sample.getStatus() == Sample.WAIT_FOR_NEXT_POPUP) {
                         //wait for 1.5 hours and then set ready state
-                        if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (90 * 60))) {
-//                        if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (60))) {
+//                        if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (90 * 60))) {
+                        if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (60))) {
                             sample.setStatus(Sample.READY);
                         }
                     }
@@ -291,11 +292,19 @@ public class MainService extends Service {
                 && packageName.equals(appPackageName)) {
             writeOurAppUsage(packageName, "INNER_OPENED",this);
             ourAppUsage.setStatus(Sample.IG_OPENED);
+
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.app_open_time), String.valueOf(MyUtil.getCurrentTime()));
+            editor.apply();
         }
         if (ourAppUsage.getStatus() == Sample.IG_OPENED
                 && !packageName.equals(appPackageName)) {
             writeOurAppUsage(packageName, "INNER_CLOSED",this);
             ourAppUsage.setStatus(Sample.READY);
+        }
+
+        if(packageName.equals(appPackageName)) {
+
         }
     }
 

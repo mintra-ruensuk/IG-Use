@@ -15,12 +15,13 @@ public class SurveyData {
     private String pageFlow;
     private String surveyId;
     private String inviteUserId;
+    private String appOpenTime;
     private HashMap<String, Object> answer ;
 
     public SurveyData() {
 
     }
-    public SurveyData(String uid, String surveyId, String inviteUserId) {
+    public SurveyData(String uid, String surveyId, String inviteUserId, String appOpenTime) {
         this.timeStamp = MyUtil.getCurrentTime();
         this.uid = uid;
         this.status = INCOMPLETE;
@@ -50,6 +51,7 @@ public class SurveyData {
 //        answer.put("op1", "0"); // open-ended question 1
 //        answer.put("op2", "0"); // open-ended question 2
 
+        this.appOpenTime = appOpenTime;
 
     }
 
@@ -63,6 +65,7 @@ public class SurveyData {
         result.put("page_flow", pageFlow);
         result.put("survey_id", surveyId);
         result.put("invite_user_id", inviteUserId);
+        result.put("app_open_time", appOpenTime);
         result.put("answer", answer);
 
         return result;

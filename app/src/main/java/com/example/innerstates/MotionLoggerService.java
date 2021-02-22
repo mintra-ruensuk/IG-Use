@@ -118,7 +118,7 @@ public class MotionLoggerService extends Service implements SensorEventListener 
                     if (sensor.getSensor() != null) {
                         Map<String, Object> postValues = sensor.toMap();
 
-                        database.getReference("users/" + userUniqueId).child("sensor_meta").push().setValue(postValues);
+                        database.getReference("meta/" + userUniqueId).child("sensor_meta").push().setValue(postValues);
                     }
                 }
                 SharedPreferences.Editor editorMeta = sharedPref.edit();
