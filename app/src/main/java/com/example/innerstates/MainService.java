@@ -129,8 +129,8 @@ public class MainService extends Service {
                     }
                     if (sample.getStatus() == Sample.POPUP) {
                         // 5 minutes = 300seconds
-//                        if(MyUtil.getCurrentTime1000() >= (notifyTime + 300)) {
-                        if(MyUtil.getCurrentTime1000() >= (notifyTime + 10)) {
+                        if(MyUtil.getCurrentTime1000() >= (notifyTime + 300)) {
+//                        if(MyUtil.getCurrentTime1000() >= (notifyTime + 10)) {
                             cancelNotification(instance, notificationId);
                             recordCancelNotification(notificationId);
 
@@ -139,8 +139,8 @@ public class MainService extends Service {
                     }
                     if (sample.getStatus() == Sample.WAIT_FOR_NEXT_POPUP) {
                         //wait for 1.5 hours and then set ready state
-//                        if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (90 * 60))) {
-                        if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (60))) {
+                        if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (90 * 60))) {
+//                        if(MyUtil.getCurrentTime1000() >= (startWaitNextNotificationTime + (60))) {
                             sample.setStatus(Sample.READY);
                         }
                     }
@@ -280,11 +280,13 @@ public class MainService extends Service {
                 && isInstagramOnForeground(packageName)) {
             writeNewIgUsage(packageName, "IG_OPENED",this);
             igUsage.setStatus(Sample.IG_OPENED);
+            startMotionLoggerService();
         }
         if (igUsage.getStatus() == Sample.IG_OPENED
                 && !isInstagramOnForeground(packageName)) {
             writeNewIgUsage(packageName, "IG_CLOSED",this);
             igUsage.setStatus(Sample.READY);
+            stopMotionLoggerService();
         }
     }
     private void recordOurAppUsage(String packageName) {
@@ -375,6 +377,22 @@ public class MainService extends Service {
             return true;
         }
         return false;
+    }
+
+    public void startMotionLoggerService() {
+        if (!MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+            Log.d("serviceeeeee------>", "MotionLoggerService is starting...");
+            startService(new Intent(getBaseContext(), MotionLoggerService.class));
+        }else {
+            Log.d("serviceeeeee------>", "MotionLoggerService is running!");
+        }
+    }
+
+    public void  stopMotionLoggerService() {
+        if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
+            Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
+            stopService(new Intent(getBaseContext(), MotionLoggerService.class));
+        }
     }
 
 
