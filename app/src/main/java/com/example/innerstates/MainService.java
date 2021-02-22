@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings.Secure;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.rvalerio.fgchecker.AppChecker;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
 
@@ -50,6 +52,8 @@ public class MainService extends Service {
     private SharedPreferences sharedPref;
     private String inviteUserId ="default";
     private static int FOREGROUND_ID=16;
+    public static ArrayList<String> appUseHistory = new ArrayList<>();
+    public static boolean isCloseApp = false;
 //    public static User user;
 
     private AlarmManager alarmMgr;
@@ -101,6 +105,7 @@ public class MainService extends Service {
                     recordIgUsage(packageName);
                     recordOurAppUsage(packageName);
 
+                    addAppUseHistory(packageName);
 
                     if (sample.getStatus() == Sample.READY
                             && isOurAppOnForeground(packageName)) {
@@ -287,6 +292,7 @@ public class MainService extends Service {
             writeNewIgUsage(packageName, "IG_CLOSED",this);
             igUsage.setStatus(Sample.READY);
             stopMotionLoggerService();
+            isCloseApp = false;
         }
     }
     private void recordOurAppUsage(String packageName) {
@@ -392,6 +398,22 @@ public class MainService extends Service {
         if (MainActivity.isMyServiceRunning(MotionLoggerService.class, this)) {
             Log.d("serviceeeeee------>", "MotionLoggerService is stopping...");
             stopService(new Intent(getBaseContext(), MotionLoggerService.class));
+        }
+    }
+
+    public void addAppUseHistory(String packageName) {
+        if (packageName.toLowerCase().contains("instagram") && (!isCloseApp)) {
+            Log.d("addAppUseHistory", "===== COUNT " + appUseHistory.size());
+            appUseHistory.add(packageName);
+            if (appUseHistory.size() >= 3) {
+                // Create Notification
+                Toast.makeText(getApplicationContext(),"Please switch to IG Use for browsing content!",Toast.LENGTH_LONG).show();
+                Log.d("addAppUseHistory", "===== yeah");
+            }
+            isCloseApp = true;
+        }else if(packageName.equals(appPackageName)){
+            appUseHistory.clear();
+            Log.d("addAppUseHistory", "===== clear");
         }
     }
 
